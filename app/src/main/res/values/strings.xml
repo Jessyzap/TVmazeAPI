@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">TVmaze</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="episode_banner">episode banner</string>
+    <string name="episode_title">Episode Title</string>
+    <string name="season">Season 1</string>
+    <string name="episode">Episode 1</string>
+    <string name="description">Description</string>
+    <string name="enter_the_series_title">Enter the series title</string>
+    <string name="search">search</string>
+    <string name="movie_poster">Movie poster</string>
+    <string name="genre">Genre</string>
+    <string name="release">10/10/10</string>
+    <string name="title">Title</string>
+    <string name="movie_banner">Movie banner</string>
+    <string name="episode_banner_item">Episode banner</string>
+    <string name="season_bar">Season</string>
+</resources>

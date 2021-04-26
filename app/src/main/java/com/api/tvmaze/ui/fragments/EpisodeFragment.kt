@@ -1,4 +1,4 @@
-package com.api.tvmaze.fragments
+package com.api.tvmaze.ui.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,10 +12,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.api.tvmaze.R
-import com.api.tvmaze.adapter.EpisodeListAdapter
+import com.api.tvmaze.ui.adapter.EpisodeListAdapter
 import com.api.tvmaze.api.EpisodeAPI
 import com.api.tvmaze.api.Network
-import com.api.tvmaze.fragments.HomeFragment.Companion.URL
+import com.api.tvmaze.ui.fragments.HomeFragment.Companion.URL
 import com.api.tvmaze.model.Episode
 import com.api.tvmaze.model.Season
 import com.api.tvmaze.viewModel.ShowViewModel

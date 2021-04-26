@@ -1,5 +1,6 @@
 package com.api.tvmaze.api
 
+import com.api.tvmaze.model.Search
 import com.api.tvmaze.model.Show
 import retrofit2.Call
 import retrofit2.http.GET
@@ -13,13 +14,11 @@ interface SearchAPI {
 //        @Path("search") search: String
 //    ): Call<List<Show>>
 
-
     @GET("/search/shows")
 
     fun getShowSearchAPI(
         @Query("q") search: String
     ): Call<List<Show>>
-
 
 //    @GET("/singlesearch/shows")
 //

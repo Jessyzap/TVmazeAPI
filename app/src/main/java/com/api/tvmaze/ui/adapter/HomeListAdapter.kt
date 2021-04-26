@@ -1,4 +1,4 @@
-package com.api.tvmaze.adapter
+package com.api.tvmaze.ui.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.api.tvmaze.R
-import com.api.tvmaze.fragments.ShowDetailFragment
+import com.api.tvmaze.ui.fragments.ShowDetailFragment
 import com.api.tvmaze.model.Show
 import com.api.tvmaze.viewModel.ShowViewModel
 
@@ -67,7 +67,9 @@ class HomeListAdapter(private val showList: List<Show>, private val context: Con
 
             val context = context as AppCompatActivity
             val transaction: FragmentTransaction = context.supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container_view, ShowDetailFragment()).commit()
+            transaction.replace(R.id.fragment_container_view,
+                ShowDetailFragment()
+            ).commit()
             transaction.addToBackStack(null)
         }
     }

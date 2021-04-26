@@ -1,10 +1,11 @@
-package com.api.tvmaze
+package com.api.tvmaze.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import com.api.tvmaze.fragments.HomeFragment
+import com.api.tvmaze.R
+import com.api.tvmaze.ui.fragments.HomeFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -31,7 +32,9 @@ class MainActivity : AppCompatActivity() {
     private fun setCurrentFragment(fragment: Fragment): FragmentTransaction {
 
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container_view, HomeFragment()).commit()
+        transaction.replace(R.id.fragment_container_view,
+            HomeFragment()
+        ).commit()
         transaction.addToBackStack(null)
         return transaction
     }

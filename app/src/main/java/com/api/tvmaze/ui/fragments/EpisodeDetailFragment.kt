@@ -1,4 +1,4 @@
-package com.api.tvmaze.fragments
+package com.api.tvmaze.ui.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -1,4 +1,4 @@
-package com.api.tvmaze.adapter
+package com.api.tvmaze.ui.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.api.tvmaze.R
-import com.api.tvmaze.fragments.EpisodeFragment
+import com.api.tvmaze.ui.fragments.EpisodeFragment
 import com.api.tvmaze.model.Season
 import com.api.tvmaze.viewModel.ShowViewModel
 
@@ -55,7 +55,9 @@ class SeasonListAdapter(
 
             val context = context as AppCompatActivity
             val transaction: FragmentTransaction = context.supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container_view, EpisodeFragment()).commit()
+            transaction.replace(R.id.fragment_container_view,
+                EpisodeFragment()
+            ).commit()
             transaction.addToBackStack("show detail")
         }
     }

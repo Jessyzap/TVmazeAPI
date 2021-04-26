@@ -1,28 +1,24 @@
 package com.api.tvmaze.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.core.text.parseAsHtml
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.api.tvmaze.R
 import com.api.tvmaze.adapter.EpisodeListAdapter
-import com.api.tvmaze.adapter.SeasonListAdapter
 import com.api.tvmaze.api.EpisodeAPI
 import com.api.tvmaze.api.Network
-import com.api.tvmaze.api.SeasonAPI
+import com.api.tvmaze.fragments.HomeFragment.Companion.URL
 import com.api.tvmaze.model.Episode
 import com.api.tvmaze.model.Season
-import com.api.tvmaze.model.Show
 import com.api.tvmaze.viewModel.ShowViewModel
-import kotlinx.android.synthetic.main.fragment_episode.*
-import kotlinx.android.synthetic.main.fragment_show_detail.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,7 +38,7 @@ class EpisodeFragment : Fragment() {
 
     fun getEpisodeAPI(id: Int) {
 
-        val retrofitClient = Network.retrofitConfig("https://api.tvmaze.com")
+        val retrofitClient = Network.retrofitConfig(URL)
         val createRetrofit = retrofitClient.create(EpisodeAPI::class.java)
 
         val call = createRetrofit.getEpisodeAPI(id)
@@ -58,9 +54,15 @@ class EpisodeFragment : Fragment() {
                     val episodes = response.body()?.toList()
 
                     episodes?.let {
-                        val episodeListAdapter =
-                            EpisodeListAdapter(episodes, requireActivity())
-                        rvEpisode.adapter = episodeListAdapter
+
+                        val rvEpisode = view?.findViewById<RecyclerView>(R.id.rvEpisode)
+                        rvEpisode?.let { rvEpisode.layoutManager = LinearLayoutManager(context) }
+
+                        val episodeListAdapter = EpisodeListAdapter(episodes, requireActivity())
+                        rvEpisode?.adapter = episodeListAdapter
+
+                        val loading = view?.findViewById<ProgressBar>(R.id.progressBarEpisodeList)
+                        loading?.visibility = View.GONE
                     }
                 }
 
@@ -70,7 +72,6 @@ class EpisodeFragment : Fragment() {
             }
         )
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -92,8 +93,5 @@ class EpisodeFragment : Fragment() {
                 }
             }
         })
-
-        val rvEpisode = view?.findViewById<RecyclerView>(R.id.rvEpisode)
-        rvEpisode?.let { rvEpisode.layoutManager = LinearLayoutManager(context) }
     }
 }

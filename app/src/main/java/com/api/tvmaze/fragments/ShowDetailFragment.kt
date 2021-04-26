@@ -1,38 +1,36 @@
 package com.api.tvmaze.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.text.parseAsHtml
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.api.tvmaze.viewModel.ShowViewModel
 import com.api.tvmaze.R
-import com.api.tvmaze.adapter.HomeListAdapter
 import com.api.tvmaze.adapter.SeasonListAdapter
 import com.api.tvmaze.api.Network
 import com.api.tvmaze.api.SeasonAPI
-import com.api.tvmaze.api.ShowAPI
+import com.api.tvmaze.fragments.HomeFragment.Companion.URL
 import com.api.tvmaze.model.Season
 import com.api.tvmaze.model.Show
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.fragment_show_detail.*
+import com.api.tvmaze.viewModel.ShowViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 
 
 class ShowDetailFragment : Fragment() {
 
     private lateinit var model: ShowViewModel
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +41,7 @@ class ShowDetailFragment : Fragment() {
 
     fun getSeasonAPI(id: Int) {
 
-        val retrofitClient = Network.retrofitConfig("https://api.tvmaze.com")
+        val retrofitClient = Network.retrofitConfig(URL)
         val createRetrofit = retrofitClient.create(SeasonAPI::class.java)
 
         val call = createRetrofit.getSeasonAPI(id)
@@ -59,14 +57,23 @@ class ShowDetailFragment : Fragment() {
                     val seasons = response.body()?.toList()
 
                     seasons?.let {
-                        val seasonListAdapter =
-                            SeasonListAdapter(seasons, requireActivity())
-                        rvSeason.adapter = seasonListAdapter
+
+                        val rvSeason = view?.findViewById<RecyclerView>(R.id.rvSeason)
+                        rvSeason?.let { rvSeason.layoutManager = LinearLayoutManager(context) }
+
+                        val seasonListAdapter = SeasonListAdapter(seasons, requireActivity())
+                        rvSeason?.adapter = seasonListAdapter
+
+                        val loading = view?.findViewById<ProgressBar>(R.id.progressBarShowDetail)
+                        loading?.visibility = View.GONE
 
 
                         if (seasons.size > 1) {
+
+                            val seasonBar = view?.findViewById<TextView>(R.id.season_bar)
+
                             val size = "${seasons.size} Seasons"
-                            season_bar.text = size
+                            seasonBar?.text = size
                         }
                     }
                 }
@@ -90,23 +97,27 @@ class ShowDetailFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        val showTitle = view?.findViewById<TextView>(R.id.txt_title)
+        val showImage = view?.findViewById<ImageView>(R.id.img_show)
+        val showGenre = view?.findViewById<TextView>(R.id.txt_genre)
+        val showSchedule = view?.findViewById<TextView>(R.id.txt_schedule)
+        val showDescription = view?.findViewById<TextView>(R.id.txt_description)
+
+
         model.showLiveData.observe(viewLifecycleOwner, object : Observer<Show> {
 
             override fun onChanged(t: Show?) {
                 t?.let {
 
-                    txt_genre.text = t.genre.joinToString(separator = ", ")
-                    img_show.load(t.image?.medium)
-                    txt_schedule.text = t.schedule.scheduleDetail()
-                    txt_title.text = t.title
-                    txt_description.text = t.description.parseAsHtml()
+                    showGenre?.text = t.genre.joinToString(separator = ", ")
+                    showImage?.load(t.image?.medium)
+                    showSchedule?.text = t.schedule.scheduleDetail()
+                    showTitle?.text = t.title
+                    showDescription?.text = t.description.parseAsHtml()
 
                     getSeasonAPI(t.id)
                 }
             }
         })
-
-        val rvSeason = view?.findViewById<RecyclerView>(R.id.rvSeason)
-        rvSeason?.let { rvSeason.layoutManager = LinearLayoutManager(context) }
     }
 }

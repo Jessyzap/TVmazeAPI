@@ -7,16 +7,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.api.tvmaze.R
-import com.api.tvmaze.fragments.HomeFragment
-import com.api.tvmaze.viewModel.ShowViewModel
 import com.api.tvmaze.fragments.ShowDetailFragment
 import com.api.tvmaze.model.Show
+import com.api.tvmaze.viewModel.ShowViewModel
 
 class HomeListAdapter(private val showList: List<Show>, private val context: Context) :
     RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>() {
@@ -57,7 +55,7 @@ class HomeListAdapter(private val showList: List<Show>, private val context: Con
 
             model!!.response(
                 Show(
-                    showList[position].show,
+                    //showList[position].show,
                     showList[position].id,
                     showList[position].genre,
                     showList[position].schedule,

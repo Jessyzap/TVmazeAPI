@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.api.tvmaze.R
 import com.api.tvmaze.fragments.EpisodeFragment
 import com.api.tvmaze.model.Season
-import com.api.tvmaze.model.Show
 import com.api.tvmaze.viewModel.ShowViewModel
 
 class SeasonListAdapter(

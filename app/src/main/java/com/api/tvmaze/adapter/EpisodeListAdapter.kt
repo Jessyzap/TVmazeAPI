@@ -14,7 +14,6 @@ import coil.load
 import com.api.tvmaze.R
 import com.api.tvmaze.fragments.EpisodeDetailFragment
 import com.api.tvmaze.model.Episode
-import com.api.tvmaze.model.Season
 import com.api.tvmaze.viewModel.ShowViewModel
 
 class EpisodeListAdapter(

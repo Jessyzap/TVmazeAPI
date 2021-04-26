@@ -42,7 +42,7 @@ class SeasonListAdapter(
     override fun onBindViewHolder(holder: SeasonListAdapter.SeasonListViewHolder, position: Int) {
 
 
-        holder.title.text = seasonList[position].number.toString()
+        holder.title.text = seasonList[position].seasonDetail()
         holder.itemView.setOnClickListener {
 
             model = ViewModelProvider(context as AppCompatActivity).get(ShowViewModel::class.java)

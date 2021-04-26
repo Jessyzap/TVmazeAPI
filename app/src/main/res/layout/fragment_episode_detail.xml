@@ -66,6 +66,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginBottom="70dp"
             android:text="@string/description"
+            android:lineSpacingExtra="4dp"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

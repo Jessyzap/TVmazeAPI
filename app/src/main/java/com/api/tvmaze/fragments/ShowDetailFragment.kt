@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.api.tvmaze.viewModel.ShowViewModel
 import com.api.tvmaze.R
 import com.api.tvmaze.adapter.HomeListAdapter
@@ -61,6 +62,12 @@ class ShowDetailFragment : Fragment() {
                         val seasonListAdapter =
                             SeasonListAdapter(seasons, requireActivity())
                         rvSeason.adapter = seasonListAdapter
+
+
+                        if (seasons.size > 1) {
+                            val size = "${seasons.size} Seasons"
+                            season_bar.text = size
+                        }
                     }
                 }
 
@@ -70,7 +77,6 @@ class ShowDetailFragment : Fragment() {
             }
         )
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,10 +96,10 @@ class ShowDetailFragment : Fragment() {
                 t?.let {
 
                     txt_genre.text = t.genre.joinToString(separator = ", ")
-                    //img_show.load(t.image)
+                    img_show.load(t.image?.medium)
+                    txt_schedule.text = t.schedule.scheduleDetail()
                     txt_title.text = t.title
                     txt_description.text = t.description.parseAsHtml()
-                    // txt_release.text = t.time
 
                     getSeasonAPI(t.id)
                 }

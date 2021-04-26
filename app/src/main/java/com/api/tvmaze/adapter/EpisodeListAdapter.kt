@@ -44,10 +44,10 @@ class EpisodeListAdapter(
 
     override fun onBindViewHolder(holder: EpisodeListAdapter.EpisodeListViewHolder, position: Int) {
 
-        holder.title.text = episodeList[position].title
-        // holder.image.load(episodeList[position].image)
+        holder.title.text = episodeList[position].seasonEpisode()
+        episodeList[position].image?.let{ holder.image.load(episodeList[position].image?.original)}
 
-        // holder.image.setImageResource(episodeList[position].image)
+
         holder.itemView.setOnClickListener {
 
             model = ViewModelProvider(context as AppCompatActivity).get(ShowViewModel::class.java)
@@ -56,7 +56,7 @@ class EpisodeListAdapter(
                 Episode(
                     episodeList[position].id,
                     episodeList[position].title,
-                    // episodeList[position].image,
+                    episodeList[position].image,
                     episodeList[position].season,
                     episodeList[position].episode,
                     episodeList[position].description

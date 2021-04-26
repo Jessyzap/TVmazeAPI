@@ -46,9 +46,11 @@ class EpisodeDetailFragment : Fragment() {
 
                    // img_episode.load(t.image)
                     txt_episode_title.text = t.title
+                    img_episode.load(t.image?.original)
                     txt_season_episode.text = t.seasonComplete()
                     txt_episode.text = t.episodeComplete()
                     txt_episode_description.text = t.description.parseAsHtml()
+
                 }
             }
         })

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.api.tvmaze.R
 import com.api.tvmaze.fragments.HomeFragment
 import com.api.tvmaze.viewModel.ShowViewModel
@@ -45,26 +46,22 @@ class HomeListAdapter(private val showList: List<Show>, private val context: Con
 
         holder.title.text = showList[position].title
 
-        //Glide.with(context).load(movieList[position].image).into(holder.image)
-        //  holder.image.load(movieList[position].image)
+        //Glide.with(context).load(showList[position].image).into(holder.image.medium)
+        showList[position].image?.let{ holder.image.load(showList[position].image?.medium)}
 
-        //holder.image.setImageResource(movieList[position].image)
         holder.itemView.setOnClickListener {
 
             model = ViewModelProvider(context as AppCompatActivity).get(ShowViewModel::class.java)
 
 
-            // val list = mutableListOf<Show>()
-
-            //list.add(
-
 
             model!!.response(
                 Show(
+                    showList[position].show,
                     showList[position].id,
                     showList[position].genre,
-                  //  movieList[position].time,
-                   // movieList[position].image,
+                    showList[position].schedule,
+                    showList[position].image,
                     showList[position].title,
                     showList[position].description
                 )

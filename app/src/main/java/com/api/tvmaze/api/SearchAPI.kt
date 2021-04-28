@@ -18,7 +18,7 @@ interface SearchAPI {
 
     fun getShowSearchAPI(
         @Query("q") search: String
-    ): Call<List<Show>>
+    ): Call<List<Search>>
 
 //    @GET("/singlesearch/shows")
 //

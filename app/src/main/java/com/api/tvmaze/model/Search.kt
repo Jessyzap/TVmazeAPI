@@ -1,3 +1,5 @@
 package com.api.tvmaze.model
 
-class Search : ArrayList<Show>()
+data class Search(
+    val show: Show
+)

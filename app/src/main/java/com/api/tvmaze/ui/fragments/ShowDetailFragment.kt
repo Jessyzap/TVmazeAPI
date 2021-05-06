@@ -19,10 +19,10 @@ import com.api.tvmaze.R
 import com.api.tvmaze.ui.adapter.SeasonListAdapter
 import com.api.tvmaze.api.Network
 import com.api.tvmaze.api.SeasonAPI
-import com.api.tvmaze.ui.fragments.HomeFragment.Companion.URL
 import com.api.tvmaze.model.Season
 import com.api.tvmaze.model.Show
 import com.api.tvmaze.viewModel.ShowViewModel
+import com.api.tvmaze.viewModel.ShowViewModel.Companion.URL
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

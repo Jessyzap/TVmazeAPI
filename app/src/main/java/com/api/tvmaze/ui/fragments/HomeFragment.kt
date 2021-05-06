@@ -1,87 +1,44 @@
 package com.api.tvmaze.ui.fragments
 
+import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.api.tvmaze.R
-import com.api.tvmaze.ui.adapter.HomeListAdapter
-import com.api.tvmaze.api.Network
-import com.api.tvmaze.api.SearchAPI
-import com.api.tvmaze.api.ShowAPI
+import com.api.tvmaze.databinding.FragmentHomeBinding
 import com.api.tvmaze.model.Show
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.api.tvmaze.ui.adapter.HomeListAdapter
+import com.api.tvmaze.viewModel.ShowViewModel
 
 
 class HomeFragment : Fragment() {
 
-    companion object {
-        const val URL = "https://api.tvmaze.com"
+    private var _binding: FragmentHomeBinding? = null
+    private val binding: FragmentHomeBinding get() = _binding!!
+    private val model = ShowViewModel()
+
+
+    private val rvHome by lazy {
+        binding.rvHome
+    }
+
+    private val searchButton by lazy {
+        binding.imgSearch
+    }
+
+    private val query by lazy {
+        binding.edtSearch
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        getShowAPI("000")
+        launch()
 
-    }
-
-    fun getShowAPI(callHome: String) {
-
-//        val retrofitClient = Network.retrofitConfig("https://api.tvmaze.com")
-//        val createRetrofit = retrofitClient.create(ShowAPI::class.java)
-//        val call = createRetrofit.getShowAPI()
-
-        val call: Call<List<Show>>
-
-        call = if (callHome == "000") {
-            val retrofitClient = Network.retrofitConfig(URL)
-            val createRetrofit = retrofitClient.create(ShowAPI::class.java)
-            createRetrofit.getShowAPI()
-
-        } else {
-
-            val retrofitClient = Network.retrofitConfig(URL)
-            val createRetrofit = retrofitClient.create(SearchAPI::class.java)
-            createRetrofit.getShowSearchAPI(callHome)
-        }
-
-
-        call.enqueue(
-            object : Callback<List<Show>> {
-
-                override fun onResponse(call: Call<List<Show>>, response: Response<List<Show>>) {
-
-                    val shows = response.body()?.toList()
-
-                    shows?.let {
-
-                        val rvHome = view?.findViewById<RecyclerView>(R.id.rvHome)
-                        rvHome?.let { rvHome.layoutManager = GridLayoutManager(context, 2) }
-
-                        val homeListAdapter = HomeListAdapter(shows, requireActivity())
-                        rvHome?.adapter = homeListAdapter
-
-                        val loading = view?.findViewById<ProgressBar>(R.id.progressBarHome)
-                        loading?.visibility = View.GONE
-                    }
-                }
-
-                override fun onFailure(call: Call<List<Show>>, t: Throwable) {
-                    Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-        )
     }
 
     override fun onCreateView(
@@ -89,22 +46,61 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+
+        return binding.root
+        //return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val imageSearch = view?.findViewById<ImageView>(R.id.img_search)
-        val editSearch = view?.findViewById<EditText>(R.id.edt_search)
+        searchButton.setOnClickListener {
 
-        imageSearch?.setOnClickListener {
+            val callSearch = query.text.toString()
 
-            val callSearch = editSearch?.text.toString()
+            val a = model.callSearch.getShowSearchAPI(callSearch).execute().body()
 
-            getShowAPI(callSearch)
+            //val homeListAdapter = HomeListAdapter(a, requireActivity())
+           // rvHome.adapter = homeListAdapter
+        }
+
+        rvHome.layoutManager = GridLayoutManager(activity, 2)
+    }
+
+
+    inner class ShowsTask() : AsyncTask<Void, Void, List<Show>?>() {
+
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+        }
+
+        override fun doInBackground(vararg params: Void?): List<Show>? {
+
+            // call response
+            return model.call.execute().body()
 
         }
+
+        override fun onPostExecute(result: List<Show>?) {
+            super.onPostExecute(result)
+
+            val loading = binding.progressBarHome
+
+                // progress bar invisible
+                loading.visibility = View.GONE
+
+                // put result in adapter
+                val homeListAdapter = result?.let { HomeListAdapter(it, requireActivity()) }
+                rvHome.adapter = homeListAdapter
+        }
+    }
+
+    fun launch() {
+        val shows = ShowsTask()
+        shows.execute()
     }
 }
+
 

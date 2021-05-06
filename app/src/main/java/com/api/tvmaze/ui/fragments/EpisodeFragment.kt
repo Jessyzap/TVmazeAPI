@@ -15,10 +15,10 @@ import com.api.tvmaze.R
 import com.api.tvmaze.ui.adapter.EpisodeListAdapter
 import com.api.tvmaze.api.EpisodeAPI
 import com.api.tvmaze.api.Network
-import com.api.tvmaze.ui.fragments.HomeFragment.Companion.URL
 import com.api.tvmaze.model.Episode
 import com.api.tvmaze.model.Season
 import com.api.tvmaze.viewModel.ShowViewModel
+import com.api.tvmaze.viewModel.ShowViewModel.Companion.URL
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

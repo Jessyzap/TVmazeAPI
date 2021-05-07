@@ -5,12 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.api.tvmaze.databinding.FragmentHomeBinding
+import com.api.tvmaze.model.Search
 import com.api.tvmaze.model.Show
 import com.api.tvmaze.ui.adapter.HomeListAdapter
+import com.api.tvmaze.ui.adapter.SearchListAdapter
 import com.api.tvmaze.viewModel.ShowViewModel
 
 
@@ -33,6 +34,9 @@ class HomeFragment : Fragment() {
         binding.edtSearch
     }
 
+    private val loading by lazy {
+        binding.progressBarHome
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,14 +59,13 @@ class HomeFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+
         searchButton.setOnClickListener {
 
             val callSearch = query.text.toString()
+            val launchSearch = SearchTask(callSearch)
 
-            val a = model.callSearch.getShowSearchAPI(callSearch).execute().body()
-
-            //val homeListAdapter = HomeListAdapter(a, requireActivity())
-           // rvHome.adapter = homeListAdapter
+            launchSearch.execute()
         }
 
         rvHome.layoutManager = GridLayoutManager(activity, 2)
@@ -70,7 +73,6 @@ class HomeFragment : Fragment() {
 
 
     inner class ShowsTask() : AsyncTask<Void, Void, List<Show>?>() {
-
 
         override fun onPreExecute() {
             super.onPreExecute()
@@ -86,14 +88,32 @@ class HomeFragment : Fragment() {
         override fun onPostExecute(result: List<Show>?) {
             super.onPostExecute(result)
 
-            val loading = binding.progressBarHome
+            // progress bar invisible
+            loading.visibility = View.GONE
 
-                // progress bar invisible
-                loading.visibility = View.GONE
+            // put result in adapter
+            val homeListAdapter = result?.let { HomeListAdapter(it, requireActivity()) }
+            rvHome.adapter = homeListAdapter
 
-                // put result in adapter
-                val homeListAdapter = result?.let { HomeListAdapter(it, requireActivity()) }
-                rvHome.adapter = homeListAdapter
+        }
+    }
+
+    inner class SearchTask(callSearch: String) : AsyncTask<Void, Void, List<Search>?>() {
+
+        val search = callSearch
+
+        override fun doInBackground(vararg params: Void): List<Search>? {
+
+            return model.callSearch.getShowSearchAPI(search).execute().body()
+        }
+
+        override fun onPostExecute(result: List<Search>?) {
+            super.onPostExecute(result)
+
+            loading.visibility = View.GONE
+
+            val searchListAdapter = result?.let { SearchListAdapter(it, requireActivity()) }
+            rvHome.adapter = searchListAdapter
         }
     }
 

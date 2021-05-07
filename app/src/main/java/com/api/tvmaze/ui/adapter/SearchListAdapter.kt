@@ -12,12 +12,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.api.tvmaze.R
+import com.api.tvmaze.model.Search
 import com.api.tvmaze.model.Show
 import com.api.tvmaze.ui.fragments.ShowDetailFragment
 import com.api.tvmaze.viewModel.ShowViewModel
 
-class HomeListAdapter(private val showList: List<Show>, private val context: Context) :
-    RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>() {
+class SearchListAdapter(private val searchList: List<Search>, private val context: Context) :
+    RecyclerView.Adapter<SearchListAdapter.HomeListViewHolder>() {
 
 
     private var model: ShowViewModel? = null
@@ -37,30 +38,28 @@ class HomeListAdapter(private val showList: List<Show>, private val context: Con
         return HomeListViewHolder(view)
     }
 
-    override fun getItemCount(): Int = showList.size
+    override fun getItemCount(): Int = searchList.size
 
     override fun onBindViewHolder(holder: HomeListViewHolder, position: Int) {
 
 
-        holder.title.text = showList[position].title
+        holder.title.text = searchList[position].show.title
+        searchList[position].show.image?.let{ holder.image.load(searchList[position].show.image?.medium) }
 
-        //Glide.with(context).load(showList[position].image).into(holder.image.medium)
-        showList[position].image?.let{ holder.image.load(showList[position].image?.medium)}
 
         holder.itemView.setOnClickListener {
 
             model = ViewModelProvider(context as AppCompatActivity).get(ShowViewModel::class.java)
 
 
-
             model!!.response(
                 Show(
-                    showList[position].id,
-                    showList[position].genre,
-                    showList[position].schedule,
-                    showList[position].image,
-                    showList[position].title,
-                    showList[position].description
+                    searchList[position].show.id,
+                    searchList[position].show.genre,
+                    searchList[position].show.schedule,
+                    searchList[position].show.image,
+                    searchList[position].show.title,
+                    searchList[position].show.description
                 )
             )
 

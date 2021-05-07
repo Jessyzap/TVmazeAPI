@@ -15,7 +15,7 @@
         <ImageView
             android:id="@+id/img_episode"
             android:layout_width="0dp"
-            android:layout_height="200dp"
+            android:layout_height="210dp"
             android:layout_margin="15dp"
             android:contentDescription="@string/episode_banner"
             android:src="@drawable/ic_image"

@@ -10,7 +10,7 @@
     <ImageView
         android:id="@+id/episodeImage"
         android:layout_width="0dp"
-        android:layout_height="175dp"
+        android:layout_height="205dp"
         android:src="@drawable/ic_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

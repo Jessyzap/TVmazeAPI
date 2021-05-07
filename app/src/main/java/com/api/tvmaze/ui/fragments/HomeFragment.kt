@@ -1,10 +1,12 @@
 package com.api.tvmaze.ui.fragments
 
+import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.api.tvmaze.databinding.FragmentHomeBinding
@@ -62,10 +64,13 @@ class HomeFragment : Fragment() {
 
         searchButton.setOnClickListener {
 
+
             val callSearch = query.text.toString()
             val launchSearch = SearchTask(callSearch)
-
             launchSearch.execute()
+
+            // dismiss keyboard
+            view?.hideKeyboard()
         }
 
         rvHome.layoutManager = GridLayoutManager(activity, 2)
@@ -100,7 +105,7 @@ class HomeFragment : Fragment() {
 
     inner class SearchTask(callSearch: String) : AsyncTask<Void, Void, List<Search>?>() {
 
-        val search = callSearch
+        private val search = callSearch
 
         override fun doInBackground(vararg params: Void): List<Search>? {
 
@@ -117,7 +122,12 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun launch() {
+    private fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    private fun launch() {
         val shows = ShowsTask()
         shows.execute()
     }

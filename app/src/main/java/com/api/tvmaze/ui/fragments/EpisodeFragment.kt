@@ -1,5 +1,6 @@
 package com.api.tvmaze.ui.fragments
 
+import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +16,11 @@ import com.api.tvmaze.R
 import com.api.tvmaze.ui.adapter.EpisodeListAdapter
 import com.api.tvmaze.api.EpisodeAPI
 import com.api.tvmaze.api.Network
+import com.api.tvmaze.databinding.FragmentEpisodeBinding
+import com.api.tvmaze.databinding.FragmentShowDetailBinding
 import com.api.tvmaze.model.Episode
 import com.api.tvmaze.model.Season
+import com.api.tvmaze.ui.adapter.SeasonListAdapter
 import com.api.tvmaze.viewModel.ShowViewModel
 import com.api.tvmaze.viewModel.ShowViewModel.Companion.URL
 import retrofit2.Call
@@ -26,7 +30,18 @@ import retrofit2.Response
 
 class EpisodeFragment : Fragment() {
 
-    private lateinit var model: ShowViewModel
+    private var _binding: FragmentEpisodeBinding? = null
+    private val binding: FragmentEpisodeBinding get() = _binding!!
+    private var model = ShowViewModel()
+
+
+    private val rvEpisode by lazy {
+        binding.rvEpisode
+    }
+
+    private val loading by lazy {
+        binding.progressBarEpisodeList
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,49 +51,13 @@ class EpisodeFragment : Fragment() {
 
     }
 
-    fun getEpisodeAPI(id: Int) {
-
-        val retrofitClient = Network.retrofitConfig(URL)
-        val createRetrofit = retrofitClient.create(EpisodeAPI::class.java)
-
-        val call = createRetrofit.getEpisodeAPI(id)
-
-        call.enqueue(
-            object : Callback<List<Episode>> {
-
-                override fun onResponse(
-                    call: Call<List<Episode>>,
-                    response: Response<List<Episode>>
-                ) {
-
-                    val episodes = response.body()?.toList()
-
-                    episodes?.let {
-
-                        val rvEpisode = view?.findViewById<RecyclerView>(R.id.rvEpisode)
-                        rvEpisode?.let { rvEpisode.layoutManager = LinearLayoutManager(context) }
-
-                        val episodeListAdapter = EpisodeListAdapter(episodes, requireActivity())
-                        rvEpisode?.adapter = episodeListAdapter
-
-                        val loading = view?.findViewById<ProgressBar>(R.id.progressBarEpisodeList)
-                        loading?.visibility = View.GONE
-                    }
-                }
-
-                override fun onFailure(call: Call<List<Episode>>, t: Throwable) {
-                    Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-        )
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        return inflater.inflate(R.layout.fragment_episode, container, false)
+        _binding = FragmentEpisodeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -89,9 +68,30 @@ class EpisodeFragment : Fragment() {
             override fun onChanged(t: Season?) {
                 t?.let {
 
-                    getEpisodeAPI(t.id)
+                    EpisodeTask(t.id).execute()
                 }
             }
         })
+
+        rvEpisode.layoutManager = LinearLayoutManager(activity)
+    }
+
+    inner class EpisodeTask(id: Int) : AsyncTask<Void, Void, List<Episode>?>() {
+
+        private var seasonID = id
+
+        override fun doInBackground(vararg params: Void?): List<Episode>? {
+
+            return model.callEpisode.getEpisodeAPI(seasonID).execute().body()
+        }
+
+        override fun onPostExecute(result: List<Episode>?) {
+            super.onPostExecute(result)
+
+            loading.visibility = View.GONE
+
+            val episodeListAdapter = result?.let { EpisodeListAdapter(it, requireActivity()) }
+            rvEpisode.adapter = episodeListAdapter
+        }
     }
 }

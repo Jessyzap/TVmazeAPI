@@ -1,36 +1,38 @@
 package com.api.tvmaze.ui.fragments
 
+import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
 import androidx.core.text.parseAsHtml
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.api.tvmaze.R
-import com.api.tvmaze.ui.adapter.SeasonListAdapter
-import com.api.tvmaze.api.Network
-import com.api.tvmaze.api.SeasonAPI
+import com.api.tvmaze.databinding.FragmentShowDetailBinding
 import com.api.tvmaze.model.Season
 import com.api.tvmaze.model.Show
+import com.api.tvmaze.ui.adapter.SeasonListAdapter
 import com.api.tvmaze.viewModel.ShowViewModel
-import com.api.tvmaze.viewModel.ShowViewModel.Companion.URL
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class ShowDetailFragment : Fragment() {
 
-    private lateinit var model: ShowViewModel
+    private var _binding: FragmentShowDetailBinding? = null
+    private val binding: FragmentShowDetailBinding get() = _binding!!
+    private var model = ShowViewModel()
+
+
+    private val rvSeason by lazy {
+        binding.rvSeason
+    }
+
+    private val loading by lazy {
+        binding.progressBarShowDetail
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,69 +41,25 @@ class ShowDetailFragment : Fragment() {
 
     }
 
-    fun getSeasonAPI(id: Int) {
-
-        val retrofitClient = Network.retrofitConfig(URL)
-        val createRetrofit = retrofitClient.create(SeasonAPI::class.java)
-
-        val call = createRetrofit.getSeasonAPI(id)
-
-        call.enqueue(
-            object : Callback<List<Season>> {
-
-                override fun onResponse(
-                    call: Call<List<Season>>,
-                    response: Response<List<Season>>
-                ) {
-
-                    val seasons = response.body()?.toList()
-
-                    seasons?.let {
-
-                        val rvSeason = view?.findViewById<RecyclerView>(R.id.rvSeason)
-                        rvSeason?.let { rvSeason.layoutManager = LinearLayoutManager(context) }
-
-                        val seasonListAdapter = SeasonListAdapter(seasons, requireActivity())
-                        rvSeason?.adapter = seasonListAdapter
-
-                        val loading = view?.findViewById<ProgressBar>(R.id.progressBarShowDetail)
-                        loading?.visibility = View.GONE
-
-
-                        if (seasons.size > 1) {
-
-                            val seasonBar = view?.findViewById<TextView>(R.id.season_bar)
-
-                            val size = "${seasons.size} Seasons"
-                            seasonBar?.text = size
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<List<Season>>, t: Throwable) {
-                    Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-        )
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        return inflater.inflate(R.layout.fragment_show_detail, container, false)
+        _binding = FragmentShowDetailBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val showTitle = view?.findViewById<TextView>(R.id.txt_title)
-        val showImage = view?.findViewById<ImageView>(R.id.img_show)
-        val showGenre = view?.findViewById<TextView>(R.id.txt_genre)
-        val showSchedule = view?.findViewById<TextView>(R.id.txt_schedule)
-        val showDescription = view?.findViewById<TextView>(R.id.txt_description)
+
+        val showTitle = binding.txtTitle
+        val showImage = binding.imgShow
+        val showGenre = binding.txtGenre
+        val showSchedule = binding.txtSchedule
+        val showDescription = binding.txtDescription
 
 
         model.showLiveData.observe(viewLifecycleOwner, object : Observer<Show> {
@@ -109,15 +67,42 @@ class ShowDetailFragment : Fragment() {
             override fun onChanged(t: Show?) {
                 t?.let {
 
-                    showGenre?.text = t.genre.joinToString(separator = ", ")
-                    showImage?.load(t.image?.medium)
-                    showSchedule?.text = t.schedule.scheduleDetail()
-                    showTitle?.text = t.title
-                    showDescription?.text = t.description.parseAsHtml()
+                    showGenre.text = t.genre.joinToString(separator = ", ")
+                    showImage.load(t.image?.medium)
+                    showSchedule.text = t.schedule.scheduleDetail()
+                    showTitle.text = t.title
+                    showDescription.text = t.description.parseAsHtml()
 
-                    getSeasonAPI(t.id)
+                    SeasonTask(t.id).execute()
                 }
             }
         })
+
+        rvSeason.layoutManager = LinearLayoutManager(activity)
+    }
+
+    inner class SeasonTask(id: Int) : AsyncTask<Void, Void, List<Season>?>() {
+
+        private var showID = id
+        private val seasonBar = binding.seasonBar
+
+
+        override fun doInBackground(vararg params: Void?): List<Season>? {
+
+            return model.callSeason.getSeasonAPI(showID).execute().body()
+        }
+
+        override fun onPostExecute(result: List<Season>?) {
+            super.onPostExecute(result)
+
+            loading.visibility = View.GONE
+
+            result?.let { if (it.size > 1 ) {
+                seasonBar.text = "${it.size} Seasons"
+            } }
+
+            val seasonListAdapter = result?.let { SeasonListAdapter(it, requireActivity()) }
+            rvSeason.adapter = seasonListAdapter
+        }
     }
 }

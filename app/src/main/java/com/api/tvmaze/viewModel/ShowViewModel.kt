@@ -2,9 +2,7 @@ package com.api.tvmaze.viewModel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.api.tvmaze.api.Network
-import com.api.tvmaze.api.SearchAPI
-import com.api.tvmaze.api.ShowAPI
+import com.api.tvmaze.api.*
 import com.api.tvmaze.model.Episode
 import com.api.tvmaze.model.Search
 import com.api.tvmaze.model.Season
@@ -37,6 +35,10 @@ class ShowViewModel : ViewModel() {
 
 
     val call: Call<List<Show>> = retrofitClient.create(ShowAPI::class.java).getShowAPI()
+
+    val callSeason = retrofitClient.create(SeasonAPI::class.java)
+
+    val callEpisode = retrofitClient.create(EpisodeAPI::class.java)
 
     val callSearch = retrofitClient.create(SearchAPI::class.java)
 }

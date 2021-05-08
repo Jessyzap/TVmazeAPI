@@ -5,27 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.api.tvmaze.R
-import com.api.tvmaze.ui.adapter.EpisodeListAdapter
-import com.api.tvmaze.api.EpisodeAPI
-import com.api.tvmaze.api.Network
 import com.api.tvmaze.databinding.FragmentEpisodeBinding
-import com.api.tvmaze.databinding.FragmentShowDetailBinding
 import com.api.tvmaze.model.Episode
 import com.api.tvmaze.model.Season
-import com.api.tvmaze.ui.adapter.SeasonListAdapter
+import com.api.tvmaze.ui.adapter.EpisodeListAdapter
 import com.api.tvmaze.viewModel.ShowViewModel
-import com.api.tvmaze.viewModel.ShowViewModel.Companion.URL
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class EpisodeFragment : Fragment() {

@@ -2,8 +2,7 @@ package com.api.tvmaze.model
 
 import com.google.gson.annotations.SerializedName
 
-class ScheduleType(
-
+data class ScheduleType(
     @SerializedName("time") val time: String,
     @SerializedName("days") val days: Array<String>
 

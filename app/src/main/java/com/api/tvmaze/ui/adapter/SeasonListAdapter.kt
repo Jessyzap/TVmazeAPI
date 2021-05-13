@@ -4,13 +4,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.api.tvmaze.R
 import com.api.tvmaze.databinding.ItemSeasonListBinding
 import com.api.tvmaze.model.Season
-import com.api.tvmaze.ui.fragments.EpisodeFragment
 import com.api.tvmaze.viewModel.ShowViewModel
 
 class SeasonListAdapter(
@@ -42,7 +41,6 @@ class SeasonListAdapter(
 
     override fun onBindViewHolder(holder: SeasonListAdapter.SeasonListViewHolder, position: Int) {
 
-
         holder.title.text = seasonList[position].seasonDetail()
         holder.itemView.setOnClickListener {
 
@@ -55,10 +53,7 @@ class SeasonListAdapter(
                 )
             )
 
-            val context = context as AppCompatActivity
-            val transaction: FragmentTransaction = context.supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container_view, EpisodeFragment()).commit()
-            transaction.addToBackStack("show detail")
+            it.findNavController().navigate(R.id.action_showDetailFragment_to_episodeFragment)
         }
     }
 }

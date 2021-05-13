@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.api.tvmaze.databinding.FragmentHomeBinding
@@ -19,10 +20,8 @@ import com.api.tvmaze.viewModel.ShowViewModel
 
 class HomeFragment : Fragment() {
 
-    private var _binding: FragmentHomeBinding? = null
-    private val binding: FragmentHomeBinding get() = _binding!!
+    private lateinit var binding: FragmentHomeBinding
     private val model = ShowViewModel()
-
 
     private val rvHome by lazy {
         binding.rvHome
@@ -52,7 +51,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -80,25 +79,36 @@ class HomeFragment : Fragment() {
 
         override fun onPreExecute() {
             super.onPreExecute()
+
         }
 
         override fun doInBackground(vararg params: Void?): List<Show>? {
 
-            // call response
-            return model.call.execute().body()
+            try {
+                // call response
+                return model.call.execute().body()
 
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                return null
+            }
         }
 
         override fun onPostExecute(result: List<Show>?) {
             super.onPostExecute(result)
 
-            // progress bar invisible
-            loading.visibility = View.GONE
+            try {
+                // progress bar invisible
+                loading.visibility = View.GONE
 
-            // put result in adapter
-            val homeListAdapter = result?.let { HomeListAdapter(it, requireActivity()) }
-            rvHome.adapter = homeListAdapter
+                // put result in adapter
+                val homeListAdapter = result?.let { HomeListAdapter(it, requireActivity()) }
+                rvHome.adapter = homeListAdapter
+                homeListAdapter?.notifyDataSetChanged()
 
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -118,6 +128,7 @@ class HomeFragment : Fragment() {
 
             val searchListAdapter = result?.let { SearchListAdapter(it, requireActivity()) }
             rvHome.adapter = searchListAdapter
+            searchListAdapter?.notifyDataSetChanged()
         }
     }
 

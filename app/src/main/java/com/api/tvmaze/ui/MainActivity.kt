@@ -1,14 +1,20 @@
 package com.api.tvmaze.ui
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.api.tvmaze.R
 import com.api.tvmaze.databinding.ActivityMainBinding
-import com.api.tvmaze.ui.fragments.HomeFragment
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var navController: NavController
 
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
@@ -20,24 +26,21 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNavigation = binding.bottomNavigation
 
-        setCurrentFragment(HomeFragment())
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        navController = navHostFragment.findNavController()
 
-        bottomNavigation.setOnNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.item_home -> {
-                    setCurrentFragment(HomeFragment())
-                }
-            }
-            true
-        }
+        setupActionBarWithNavController(navController)
+        bottomNavigation.setupWithNavController(navController)
     }
 
-    private fun setCurrentFragment(fragment: Fragment): FragmentTransaction {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return NavigationUI.
+        onNavDestinationSelected(item, navController)
+                || super.onOptionsItemSelected(item)
+    }
 
-        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container_view, HomeFragment()).commit()
-        transaction.addToBackStack(null)
-        return transaction
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp()
     }
 }
 

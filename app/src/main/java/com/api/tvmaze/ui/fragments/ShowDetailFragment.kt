@@ -20,8 +20,7 @@ import com.api.tvmaze.viewModel.ShowViewModel
 
 class ShowDetailFragment : Fragment() {
 
-    private var _binding: FragmentShowDetailBinding? = null
-    private val binding: FragmentShowDetailBinding get() = _binding!!
+    private lateinit var binding: FragmentShowDetailBinding
     private var model = ShowViewModel()
 
 
@@ -46,7 +45,7 @@ class ShowDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentShowDetailBinding.inflate(inflater, container, false)
+        binding = FragmentShowDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -103,6 +102,7 @@ class ShowDetailFragment : Fragment() {
 
             val seasonListAdapter = result?.let { SeasonListAdapter(it, requireActivity()) }
             rvSeason.adapter = seasonListAdapter
+            seasonListAdapter?.notifyDataSetChanged()
         }
     }
 }

@@ -16,8 +16,7 @@ import com.api.tvmaze.viewModel.ShowViewModel
 
 class EpisodeDetailFragment : Fragment() {
 
-    private var _binding: FragmentEpisodeDetailBinding? = null
-    private val binding: FragmentEpisodeDetailBinding get() = _binding!!
+    private lateinit var binding: FragmentEpisodeDetailBinding
     private var model = ShowViewModel()
 
 
@@ -33,7 +32,7 @@ class EpisodeDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentEpisodeDetailBinding.inflate(inflater, container, false)
+        binding = FragmentEpisodeDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 

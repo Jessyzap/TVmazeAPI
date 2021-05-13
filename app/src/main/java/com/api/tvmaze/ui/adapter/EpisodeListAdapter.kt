@@ -3,16 +3,14 @@ package com.api.tvmaze.ui.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.api.tvmaze.R
 import com.api.tvmaze.databinding.ItemEpisodeListBinding
 import com.api.tvmaze.model.Episode
-import com.api.tvmaze.ui.fragments.EpisodeDetailFragment
 import com.api.tvmaze.viewModel.ShowViewModel
 
 class EpisodeListAdapter(
@@ -65,10 +63,7 @@ class EpisodeListAdapter(
                 )
             )
 
-            val context = context as AppCompatActivity
-            val transaction: FragmentTransaction = context.supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container_view, EpisodeDetailFragment()).commit()
-            transaction.addToBackStack("list of episodes")
+            it.findNavController().navigate(R.id.action_episodeFragment_to_episodeDetailFragment)
         }
     }
 }

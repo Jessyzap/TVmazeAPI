@@ -4,15 +4,14 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.api.tvmaze.R
 import com.api.tvmaze.databinding.ItemHomeListBinding
 import com.api.tvmaze.model.Search
 import com.api.tvmaze.model.Show
-import com.api.tvmaze.ui.fragments.ShowDetailFragment
 import com.api.tvmaze.viewModel.ShowViewModel
 
 class SearchListAdapter(private val searchList: List<Search>, private val context: Context) :
@@ -65,10 +64,7 @@ class SearchListAdapter(private val searchList: List<Search>, private val contex
                 )
             )
 
-            val context = context as AppCompatActivity
-            val transaction: FragmentTransaction = context.supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container_view, ShowDetailFragment()).commit()
-            transaction.addToBackStack(null)
+            it.findNavController().navigate(R.id.action_homeFragment_to_showDetailFragment)
         }
     }
 }

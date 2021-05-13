@@ -11,7 +11,7 @@
 - [x] List of Seasons <br>
 - [x] List of episodes <br> 
 - [x] Episode details 
-- [ ] Search for shows <br> 
+- [x] Search for shows <br> 
 
 ### 🛠 Technology
 - Retrofit

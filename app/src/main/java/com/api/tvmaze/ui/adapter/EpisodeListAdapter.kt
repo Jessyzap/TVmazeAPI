@@ -55,11 +55,11 @@ class EpisodeListAdapter(
             model?.responseEpisode(
                 Episode(
                     episodeList[position].id,
-                    episodeList[position].title,
+                    episodeList[position].name,
                     episodeList[position].image,
                     episodeList[position].season,
-                    episodeList[position].episode,
-                    episodeList[position].description
+                    episodeList[position].number,
+                    episodeList[position].summary
                 )
             )
 

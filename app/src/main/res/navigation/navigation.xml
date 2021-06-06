@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_episodeFragment_to_episodeDetailFragment"
             app:destination="@id/episodeDetailFragment" />
+        <action
+            android:id="@+id/action_episodeFragment_to_showDetailFragment"
+            app:destination="@id/showDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/showDetailFragment"
@@ -31,9 +34,16 @@
         <action
             android:id="@+id/action_showDetailFragment_to_episodeFragment"
             app:destination="@id/episodeFragment" />
+        <action
+            android:id="@+id/action_showDetailFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/episodeDetailFragment"
         android:name="com.api.tvmaze.ui.fragments.EpisodeDetailFragment"
-        android:label="TVmaze" />
+        android:label="TVmaze" >
+        <action
+            android:id="@+id/action_episodeDetailFragment_to_episodeFragment"
+            app:destination="@id/episodeFragment" />
+    </fragment>
 </navigation>

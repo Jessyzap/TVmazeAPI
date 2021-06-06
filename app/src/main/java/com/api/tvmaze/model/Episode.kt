@@ -4,11 +4,11 @@ import com.google.gson.annotations.SerializedName
 
 data class Episode(
     @SerializedName("id") val id: Int,
-    @SerializedName("name") val title: String,
+    @SerializedName("name") val name: String,
     @SerializedName("image") val image: ImageType?,
     @SerializedName("season") val season: Int,
-    @SerializedName("number") val episode: Int,
-    @SerializedName("summary") val description: String
+    @SerializedName("number") val number: Int,
+    @SerializedName("summary") val summary: String
 ) {
 
     fun seasonComplete(): String {
@@ -16,10 +16,10 @@ data class Episode(
     }
 
     fun episodeComplete(): String {
-        return "Episode: $episode"
+        return "Episode: $number"
     }
 
     fun seasonEpisode(): String {
-        return "S: $season  E: $episode  |  $title"
+        return "S: $season  E: $number  |  $name"
     }
 }

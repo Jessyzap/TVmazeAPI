@@ -42,6 +42,32 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp()
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+//        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+//        transaction.replace(R.id.fragment_container_view, EpisodeFragment()).commit()
+
+//        val view: View? = null
+//
+//        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view)
+//
+//        when (currentFragment) {
+//            is ShowDetailFragment -> {
+//                //view?.findNavController()?.navigate(R.id.action_showDetailFragment_to_homeFragment)
+//
+//                val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+//                transaction.replace(R.id.fragment_container_view, HomeFragment()).commit()
+//            }
+//            is EpisodeFragment -> {
+//                //view?.findNavController()?.navigate(R.id.action_episodeFragment_to_showDetailFragment)
+//            }
+//            is EpisodeDetailFragment -> {
+//                //view?.findNavController()?.navigate(R.id.action_episodeDetailFragment_to_episodeFragment)
+//            }
+//        }
+    }
 }
 
 

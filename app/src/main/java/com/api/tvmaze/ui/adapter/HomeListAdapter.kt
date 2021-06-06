@@ -14,8 +14,9 @@ import com.api.tvmaze.model.Show
 import com.api.tvmaze.viewModel.ShowViewModel
 
 class HomeListAdapter(
-    private val showList: List<Show>,
-    private val context: Context) :
+    private var showList: List<Show>,
+    private val context: Context
+) :
     RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>() {
 
 
@@ -33,7 +34,7 @@ class HomeListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeListViewHolder {
 
         val binding =
-            ItemHomeListBinding.inflate(LayoutInflater.from(context), parent,false)
+            ItemHomeListBinding.inflate(LayoutInflater.from(context), parent, false)
 
         return HomeListViewHolder(binding)
     }
@@ -44,10 +45,10 @@ class HomeListAdapter(
 
     override fun onBindViewHolder(holder: HomeListViewHolder, position: Int) {
 
-        holder.title.text = showList[position].title
+        holder.title.text = showList[position].name
 
         //Glide.with(context).load(showList[position].image).into(holder.image.medium)
-        showList[position].image?.let{ holder.image.load(showList[position].image?.medium)}
+        showList[position].image?.let { holder.image.load(showList[position].image?.medium) }
 
         holder.itemView.setOnClickListener {
 
@@ -56,14 +57,13 @@ class HomeListAdapter(
             model?.response(
                 Show(
                     showList[position].id,
-                    showList[position].genre,
+                    showList[position].genres,
                     showList[position].schedule,
                     showList[position].image,
-                    showList[position].title,
-                    showList[position].description
+                    showList[position].name,
+                    showList[position].summary
                 )
             )
-
             it.findNavController().navigate(R.id.action_homeFragment_to_showDetailFragment)
         }
     }

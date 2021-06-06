@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.core.text.parseAsHtml
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import coil.load
+import com.api.tvmaze.R
 import com.api.tvmaze.databinding.FragmentEpisodeDetailBinding
 import com.api.tvmaze.model.Episode
 import com.api.tvmaze.viewModel.ShowViewModel
@@ -30,7 +33,7 @@ class EpisodeDetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = FragmentEpisodeDetailBinding.inflate(inflater, container, false)
         return binding.root
@@ -49,17 +52,25 @@ class EpisodeDetailFragment : Fragment() {
 
         model.episodeLiveData.observe(viewLifecycleOwner, object : Observer<Episode> {
 
-            override fun onChanged(t: Episode?) {
-                t?.let {
+            override fun onChanged(episode: Episode?) {
+                episode?.let {
 
-                    episodeTitle.text = t.title
-                    episodeImage.load(t.image?.original)
-                    episodeSeason.text = t.seasonComplete()
-                    episodeNumber.text = t.episodeComplete()
-                    episodeDescription.text = t.description.parseAsHtml()
+                    episodeTitle.text = episode.name
+                    episodeImage.load(episode.image?.original)
+                    episodeSeason.text = episode.seasonComplete()
+                    episodeNumber.text = episode.episodeComplete()
+                    episodeDescription.text = episode.summary.parseAsHtml()
 
                 }
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            findNavController().navigate(R.id.episodeFragment)
+        }
     }
 }

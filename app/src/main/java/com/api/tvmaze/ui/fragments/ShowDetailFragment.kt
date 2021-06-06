@@ -1,16 +1,17 @@
 package com.api.tvmaze.ui.fragments
 
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.core.text.parseAsHtml
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.fragment.findNavController
 import coil.load
+import com.api.tvmaze.R
 import com.api.tvmaze.databinding.FragmentShowDetailBinding
 import com.api.tvmaze.model.Season
 import com.api.tvmaze.model.Show
@@ -23,7 +24,6 @@ class ShowDetailFragment : Fragment() {
     private lateinit var binding: FragmentShowDetailBinding
     private var model = ShowViewModel()
 
-
     private val rvSeason by lazy {
         binding.rvSeason
     }
@@ -31,7 +31,6 @@ class ShowDetailFragment : Fragment() {
     private val loading by lazy {
         binding.progressBarShowDetail
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,12 +42,11 @@ class ShowDetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = FragmentShowDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
-
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -61,48 +59,41 @@ class ShowDetailFragment : Fragment() {
         val showDescription = binding.txtDescription
 
 
-        model.showLiveData.observe(viewLifecycleOwner, object : Observer<Show> {
+        model.showLiveData.observe(viewLifecycleOwner,
+            Observer<Show> { show ->
+                show?.let {
+                    showGenre.text = show.genres.joinToString(separator = ", ")
+                    showImage.load(show.image?.medium)
+                    showSchedule.text = show.schedule.scheduleDetail()
+                    showTitle.text = show.name
+                    showDescription.text = show.summary.parseAsHtml()
 
-            override fun onChanged(t: Show?) {
-                t?.let {
-
-                    showGenre.text = t.genre.joinToString(separator = ", ")
-                    showImage.load(t.image?.medium)
-                    showSchedule.text = t.schedule.scheduleDetail()
-                    showTitle.text = t.title
-                    showDescription.text = t.description.parseAsHtml()
-
-                    SeasonTask(t.id).execute()
+                    model.getSeasons(show.id)
+                    loading.visibility = View.GONE
                 }
-            }
-        })
+            })
 
-        rvSeason.layoutManager = LinearLayoutManager(activity)
+        model.seasonLiveDataList.observe(viewLifecycleOwner,
+            Observer<List<Season>> { seasonList ->
+                val seasonBar = binding.seasonBar
+
+                seasonList?.let {
+                    if (seasonList.size > 1) seasonBar.text = ("${seasonList.size} Seasons")
+
+                    val seasonListAdapter = SeasonListAdapter(seasonList, requireActivity())
+                    rvSeason.adapter = seasonListAdapter
+                    seasonListAdapter.notifyDataSetChanged()
+                }
+            })
     }
 
-    inner class SeasonTask(id: Int) : AsyncTask<Void, Void, List<Season>?>() {
+    override fun onResume() {
+        super.onResume()
 
-        private var showID = id
-        private val seasonBar = binding.seasonBar
-
-
-        override fun doInBackground(vararg params: Void?): List<Season>? {
-
-            return model.callSeason.getSeasonAPI(showID).execute().body()
-        }
-
-        override fun onPostExecute(result: List<Season>?) {
-            super.onPostExecute(result)
-
-            loading.visibility = View.GONE
-
-            result?.let { if (it.size > 1 ) {
-                seasonBar.text = "${it.size} Seasons"
-            } }
-
-            val seasonListAdapter = result?.let { SeasonListAdapter(it, requireActivity()) }
-            rvSeason.adapter = seasonListAdapter
-            seasonListAdapter?.notifyDataSetChanged()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            findNavController().navigate(R.id.homeFragment)
         }
     }
 }
+
+

@@ -44,7 +44,7 @@ class SearchListAdapter(private val searchList: List<Search>, private val contex
     override fun onBindViewHolder(holder: HomeListViewHolder, position: Int) {
 
 
-        holder.title.text = searchList[position].show.title
+        holder.title.text = searchList[position].show.name
         searchList[position].show.image?.let{ holder.image.load(searchList[position].show.image?.medium) }
 
 
@@ -56,11 +56,11 @@ class SearchListAdapter(private val searchList: List<Search>, private val contex
             model?.response(
                 Show(
                     searchList[position].show.id,
-                    searchList[position].show.genre,
+                    searchList[position].show.genres,
                     searchList[position].show.schedule,
                     searchList[position].show.image,
-                    searchList[position].show.title,
-                    searchList[position].show.description
+                    searchList[position].show.name,
+                    searchList[position].show.summary
                 )
             )
 

@@ -1,14 +1,14 @@
 package com.api.tvmaze.ui.fragments
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.api.tvmaze.R
 import com.api.tvmaze.databinding.FragmentHomeBinding
@@ -16,8 +16,6 @@ import com.api.tvmaze.model.Show
 import com.api.tvmaze.ui.adapter.HomeListAdapter
 import com.api.tvmaze.utils.hideKeyboard
 import com.api.tvmaze.viewModel.ShowViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 class HomeFragment : Fragment() {
@@ -26,6 +24,8 @@ class HomeFragment : Fragment() {
     private lateinit var model: ShowViewModel
     private lateinit var adapter: HomeListAdapter
     private var forceArg: Boolean = false
+    private val handler = Handler(Looper.getMainLooper())
+    private var runnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,34 +50,31 @@ class HomeFragment : Fragment() {
         observer()
     }
 
-    private fun getArgs(){
+    private fun getArgs() {
         forceArg = arguments?.getBoolean("force") ?: false
     }
 
     private fun setupSearch() {
-
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
             override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let {
-                    model.getSearch(it)
-                }
-                return true
+                return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                if (newText != model.currentSearchQuery && (newText?.length ?: 0) >= 3) {
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        delay(1000)
+                runnable?.let { handler.removeCallbacks(it) }
+
+                if (newText != model.currentSearchQuery && (newText?.length ?: 0) >= 2) {
+                    runnable = Runnable {
                         model.getSearch(newText.orEmpty())
                     }
+
+                    runnable?.let { handler.postDelayed(it, 800) }
+                    model.currentSearchQuery = newText
                 }
-                model.currentSearchQuery = newText
                 return true
             }
-
         })
-
     }
 
     private fun setupAdapter() {
@@ -89,8 +86,11 @@ class HomeFragment : Fragment() {
         if (list.isEmpty()) {
             binding.placeholder.visibility = View.VISIBLE
             adapter.updateList(emptyList())
-        } else
+        } else {
             binding.placeholder.visibility = View.GONE
+            view?.hideKeyboard()
+        }
+
     }
 
     private fun observer() {
@@ -100,7 +100,6 @@ class HomeFragment : Fragment() {
             showList?.let {
                 adapter.updateList(it)
                 setPlaceholder(showList)
-                view?.hideKeyboard()
             }
         }
 
@@ -110,7 +109,6 @@ class HomeFragment : Fragment() {
             searchList?.let {
                 adapter.updateList(it)
                 setPlaceholder(searchList)
-                view?.hideKeyboard()
             }
         }
     }
@@ -131,8 +129,9 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onPause() {
+        super.onPause()
         arguments?.clear()
     }
+
 }

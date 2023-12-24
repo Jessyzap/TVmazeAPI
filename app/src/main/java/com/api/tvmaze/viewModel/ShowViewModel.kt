@@ -13,8 +13,10 @@ import kotlinx.coroutines.launch
 
 class ShowViewModel : ViewModel() {
 
-    private var _searchLiveDataList = MutableLiveData<List<Search>>()
-    val searchLiveDataList: MutableLiveData<List<Search>>
+    var currentSearchQuery: String? = ""
+
+    private var _searchLiveDataList = MutableLiveData<List<Show>>()
+    val searchLiveDataList: MutableLiveData<List<Show>>
         get() = _searchLiveDataList
 
 
@@ -98,8 +100,10 @@ class ShowViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                val response = retrofitClient.create(SearchAPI::class.java).getShowSearchAPI(path).body()
+
                 _searchLiveDataList.postValue(
-                    retrofitClient.create(SearchAPI::class.java).getShowSearchAPI(path).body()
+                    Search.mapper(response)
                 )
             } catch (e: Exception) {
                 _searchLiveDataList.postValue(ArrayList())

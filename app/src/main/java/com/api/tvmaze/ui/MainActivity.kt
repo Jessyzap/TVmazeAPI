@@ -3,7 +3,9 @@ package com.api.tvmaze.ui
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -26,16 +28,28 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNavigation = binding.bottomNavigation
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
         navController = navHostFragment.findNavController()
 
         setupActionBarWithNavController(navController)
         bottomNavigation.setupWithNavController(navController)
+
+        binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.homeFragment -> {
+                    navController.navigate(R.id.homeFragment, Bundle(bundleOf("force" to true)))
+                    true
+                }
+
+                else -> false
+            }
+
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return NavigationUI.
-        onNavDestinationSelected(item, navController)
+        return NavigationUI.onNavDestinationSelected(item, navController)
                 || super.onOptionsItemSelected(item)
     }
 
@@ -43,31 +57,4 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-
-//        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-//        transaction.replace(R.id.fragment_container_view, EpisodeFragment()).commit()
-
-//        val view: View? = null
-//
-//        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view)
-//
-//        when (currentFragment) {
-//            is ShowDetailFragment -> {
-//                //view?.findNavController()?.navigate(R.id.action_showDetailFragment_to_homeFragment)
-//
-//                val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-//                transaction.replace(R.id.fragment_container_view, HomeFragment()).commit()
-//            }
-//            is EpisodeFragment -> {
-//                //view?.findNavController()?.navigate(R.id.action_episodeFragment_to_showDetailFragment)
-//            }
-//            is EpisodeDetailFragment -> {
-//                //view?.findNavController()?.navigate(R.id.action_episodeDetailFragment_to_episodeFragment)
-//            }
-//        }
-    }
 }
-
-

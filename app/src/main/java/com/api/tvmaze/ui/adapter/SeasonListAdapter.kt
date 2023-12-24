@@ -3,57 +3,49 @@ package com.api.tvmaze.ui.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.api.tvmaze.R
 import com.api.tvmaze.databinding.ItemSeasonListBinding
 import com.api.tvmaze.model.Season
-import com.api.tvmaze.viewModel.ShowViewModel
+import com.api.tvmaze.utils.ShowDiffUtilCallback
 
 class SeasonListAdapter(
-    private val seasonList: List<Season>,
-    private val context: Context) :
-    RecyclerView.Adapter<SeasonListAdapter.SeasonListViewHolder>() {
+    private val context: Context,
+    private val callback: (Season) -> Unit
+) : RecyclerView.Adapter<SeasonListAdapter.SeasonListViewHolder>() {
 
-
-    private var model: ShowViewModel? = null
-
+    private var seasonList: List<Season> = emptyList()
 
     inner class SeasonListViewHolder(binding: ItemSeasonListBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         val title = binding.seasonTitle
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SeasonListViewHolder {
-
-        val binding =
-            ItemSeasonListBinding.inflate(LayoutInflater.from(context), parent,false)
-
+        val binding = ItemSeasonListBinding.inflate(
+            LayoutInflater.from(context),
+            parent,
+            false
+        )
         return SeasonListViewHolder(binding)
     }
 
-
     override fun getItemCount(): Int = seasonList.size
 
-
-    override fun onBindViewHolder(holder: SeasonListAdapter.SeasonListViewHolder, position: Int) {
-
+    override fun onBindViewHolder(holder: SeasonListViewHolder, position: Int) {
         holder.title.text = seasonList[position].seasonDetail()
+
         holder.itemView.setOnClickListener {
-
-            model = ViewModelProvider(context as AppCompatActivity).get(ShowViewModel::class.java)
-
-            model?.responseSeason(
-                Season(
-                    seasonList[position].id,
-                    seasonList[position].number
-                )
-            )
-
-            it.findNavController().navigate(R.id.action_showDetailFragment_to_episodeFragment)
+            callback.invoke(seasonList[position])
         }
+
+    }
+
+    fun updateList(newList: List<Season>) {
+        val diffResult = DiffUtil.calculateDiff(ShowDiffUtilCallback(seasonList, newList))
+        seasonList = newList
+        diffResult.dispatchUpdatesTo(this)
     }
 }

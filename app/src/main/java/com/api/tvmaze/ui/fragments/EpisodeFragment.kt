@@ -4,15 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.api.tvmaze.R
 import com.api.tvmaze.databinding.FragmentEpisodeBinding
-import com.api.tvmaze.model.Episode
-import com.api.tvmaze.model.Season
 import com.api.tvmaze.ui.adapter.EpisodeListAdapter
 import com.api.tvmaze.viewModel.ShowViewModel
 
@@ -20,21 +16,13 @@ import com.api.tvmaze.viewModel.ShowViewModel
 class EpisodeFragment : Fragment() {
 
     private lateinit var binding: FragmentEpisodeBinding
-    private var model = ShowViewModel()
-
-
-    private val rvEpisode by lazy {
-        binding.rvEpisode
-    }
-
-    private val loading by lazy {
-        binding.progressBarEpisodeList
-    }
+    private lateinit var model: ShowViewModel
+    private lateinit var adapter: EpisodeListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model = ViewModelProvider(requireActivity()).get(ShowViewModel::class.java)
+        model = ViewModelProvider(requireActivity())[ShowViewModel::class.java]
 
     }
 
@@ -47,32 +35,30 @@ class EpisodeFragment : Fragment() {
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        model.seasonLiveData.observe(viewLifecycleOwner,
-            Observer<Season> { season ->
-                season?.let {
-                    model.getEpisodes(season.id)
-                }
-            })
+        setupAdapter()
 
-        model.episodeLiveDataList.observe(viewLifecycleOwner,
-            Observer<List<Episode>> { episodeList ->
-                loading.visibility = View.GONE
+        model.seasonLiveData.observe(viewLifecycleOwner) { season ->
+            season?.let {
+                model.getEpisodes(season.id)
+            }
+        }
 
-                val episodeListAdapter =
-                    episodeList?.let { EpisodeListAdapter(episodeList, requireActivity()) }
-                rvEpisode.adapter = episodeListAdapter
-                episodeListAdapter?.notifyDataSetChanged()
-            })
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            findNavController().navigate(R.id.showDetailFragment)
+        model.episodeLiveDataList.observe(viewLifecycleOwner) { episodeList ->
+            binding.progressBarEpisodeList.visibility = View.GONE
+            adapter.updateList(episodeList)
         }
     }
+
+    private fun setupAdapter() {
+        adapter = EpisodeListAdapter(requireActivity()) { episode ->
+            findNavController().navigate(R.id.action_episodeFragment_to_episodeDetailFragment)
+            model.responseEpisode(episode)
+        }
+        binding.rvEpisode.adapter = adapter
+    }
+
+
 }

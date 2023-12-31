@@ -3,29 +3,24 @@ package com.api.tvmaze.ui.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.api.tvmaze.databinding.ItemHomeListBinding
 import com.api.tvmaze.model.Show
-import com.api.tvmaze.utils.ShowDiffUtilCallback
 
 class HomeListAdapter(
     private val context: Context,
     private var callback: (Show) -> Unit
-) : RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>() {
+) : PagingDataAdapter<Show, HomeListAdapter.HomeListViewHolder>(ShowDiffCallback) {
 
-    private var showList: List<Show> = emptyList()
-
-    inner class HomeListViewHolder(binding: ItemHomeListBinding) :
+    inner class HomeListViewHolder(private val binding: ItemHomeListBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private val title = binding.movieTitle
-        private val image = binding.movieImage
-
         fun bind(show: Show) {
-            title.text = show.name
-            show.image?.medium?.let { image.load(it) }
+            binding.movieTitle.text = show.name
+            show.image?.medium?.let { binding.movieImage.load(it) }
 
             itemView.setOnClickListener {
                 callback.invoke(
@@ -49,16 +44,18 @@ class HomeListAdapter(
         return HomeListViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = showList.size
-
     override fun onBindViewHolder(holder: HomeListViewHolder, position: Int) {
-        holder.bind(showList[position])
+        getItem(position)?.let { holder.bind(it) }
     }
 
-    fun updateList(newList: List<Show>) {
-        val diffResult = DiffUtil.calculateDiff(ShowDiffUtilCallback(showList, newList))
-        showList = newList
-        diffResult.dispatchUpdatesTo(this)
+    companion object {
+        private val ShowDiffCallback = object : DiffUtil.ItemCallback<Show>() {
+            override fun areItemsTheSame(oldItem: Show, newItem: Show): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: Show, newItem: Show): Boolean =
+                oldItem == newItem
+        }
     }
 
 }

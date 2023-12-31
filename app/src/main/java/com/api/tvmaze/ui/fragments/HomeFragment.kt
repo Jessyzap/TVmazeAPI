@@ -6,30 +6,41 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
+import androidx.paging.PagingData
 import com.api.tvmaze.R
 import com.api.tvmaze.databinding.FragmentHomeBinding
 import com.api.tvmaze.model.Show
 import com.api.tvmaze.ui.adapter.HomeListAdapter
 import com.api.tvmaze.utils.hideKeyboard
 import com.api.tvmaze.viewModel.ShowViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var model: ShowViewModel
-    private lateinit var adapter: HomeListAdapter
-    private var forceArg: Boolean = false
+    private var adapter: HomeListAdapter? = null
+    private var forceFetchArg: Boolean = false
     private val handler = Handler(Looper.getMainLooper())
     private var runnable: Runnable? = null
+    private var shouldFetchShow: Boolean = false
+    private var loadStateListener: ((CombinedLoadStates) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         model = ViewModelProvider(requireActivity())[ShowViewModel::class.java]
+        shouldFetchShow = true
     }
 
     override fun onCreateView(
@@ -45,13 +56,15 @@ class HomeFragment : Fragment() {
 
         getArgs()
         setupAdapter()
-        launch(force = forceArg)
+        fetchShows(forceFetch = forceFetchArg)
         setupSearch()
-        observer()
+        submitShowListToPagingAdapter()
+        handleState()
+        searchObserver()
     }
 
     private fun getArgs() {
-        forceArg = arguments?.getBoolean("force") ?: false
+        forceFetchArg = arguments?.getBoolean("force") ?: false
     }
 
     private fun setupSearch() {
@@ -85,32 +98,55 @@ class HomeFragment : Fragment() {
     private fun setPlaceholder(list: List<Show>) {
         if (list.isEmpty()) {
             binding.placeholder.visibility = View.VISIBLE
-            adapter.updateList(emptyList())
         } else {
             binding.placeholder.visibility = View.GONE
             view?.hideKeyboard()
         }
-
     }
 
-    private fun observer() {
-        model.showLiveDataList.observe(viewLifecycleOwner) { showList ->
-            binding.progressBarHome.visibility = View.GONE
-
-            showList?.let {
-                adapter.updateList(it)
-                setPlaceholder(showList)
+    private fun submitShowListToPagingAdapter() {
+        if (model.searchLiveDataList.value.isNullOrEmpty()) {
+            lifecycleScope.launch {
+                model.pagingData.collectLatest { pagingData ->
+                    adapter?.submitData(pagingData)
+                }
             }
         }
+    }
 
+    private fun searchObserver() {
         model.searchLiveDataList.observe(viewLifecycleOwner) { searchList ->
-            binding.progressBarHome.visibility = View.GONE
-
-            searchList?.let {
-                adapter.updateList(it)
-                setPlaceholder(searchList)
+            lifecycleScope.launch {
+                searchList?.let {
+                    adapter?.submitData(PagingData.from(searchList))
+                    setPlaceholder(searchList)
+                }
             }
         }
+    }
+
+    private fun handleState() {
+        loadStateListener = { loadState: CombinedLoadStates ->
+            when (loadState.refresh) {
+                is LoadState.Loading -> {
+                    binding.progressBarHome.visibility = View.VISIBLE
+                }
+
+                is LoadState.Error -> {
+                    binding.progressBarHome.visibility = View.GONE
+                    Toast.makeText(
+                        requireContext(),
+                        "Erro ao carregar os dados",
+                        LENGTH_SHORT
+                    ).show()
+                }
+
+                is LoadState.NotLoading -> {
+                    binding.progressBarHome.visibility = View.GONE
+                }
+            }
+        }
+        loadStateListener?.let { adapter?.addLoadStateListener(it) }
     }
 
     private fun navigateToShowDetail(show: Show) {
@@ -118,20 +154,22 @@ class HomeFragment : Fragment() {
         model.response(show)
     }
 
-    private fun launch(force: Boolean = false) {
-        if (model.showLiveDataList.value.isNullOrEmpty() && model.searchLiveDataList.value.isNullOrEmpty() || force) {
-            if (force) {
-                model.showLiveDataList.value = null
-                model.searchLiveDataList.value = null
-                adapter.updateList(emptyList())
-            }
+    private fun fetchShows(forceFetch: Boolean = false) {
+        if (forceFetch || shouldFetchShow) {
+            model.searchLiveDataList.value = null
             model.getShows()
+            shouldFetchShow = false
         }
     }
 
     override fun onPause() {
         super.onPause()
         arguments?.clear()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        loadStateListener?.let { adapter?.removeLoadStateListener(it) }
     }
 
 }

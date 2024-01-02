@@ -4,9 +4,11 @@
         android:enabled="true"
         android:icon="@drawable/ic_home"
         android:title="@string/item_menu_home"/>
-<!--    <item-->
-<!--        android:id="@+id/page_2"-->
-<!--        android:enabled="true"-->
-<!--        android:icon=""-->
-<!--        android:title=""/>-->
+
+    <item
+        android:id="@+id/favorites"
+        android:enabled="true"
+        android:icon="@drawable/heart_svgrepo_com"
+        android:title="@string/item_menu_favorites"/>
+
 </menu>

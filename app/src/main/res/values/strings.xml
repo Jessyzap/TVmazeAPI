@@ -17,4 +17,12 @@
     <string name="episode_banner_item">Episode banner</string>
     <string name="season_bar">Season</string>
     <string name="item_menu_home">Home</string>
+    <string name="item_menu_favorites">Favorites</string>
+    <string name="content_description_heart_icon">heart icon</string>
+    <string name="delete">Remove</string>
+    <string name="remove_from_favorites">Do you want to remove from favorites?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_message">Error loading data</string>
+    <string name="search_empty_placeholder">No results for this search</string>
 </resources>

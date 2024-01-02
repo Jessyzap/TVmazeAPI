@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_homeFragment_to_showDetailFragment"
             app:destination="@id/showDetailFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_favoriteShowFragment"
+            app:destination="@id/favoriteShowFragment" />
     </fragment>
     <fragment
         android:id="@+id/episodeFragment"
@@ -48,5 +51,13 @@
         <action
             android:id="@+id/action_episodeDetailFragment_to_episodeFragment"
             app:destination="@id/episodeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoriteShowFragment"
+        android:name="com.api.tvmaze.ui.fragments.FavoriteShowFragment"
+        android:label="Favorites" >
+        <action
+            android:id="@+id/action_favoriteShowFragment_to_showDetailFragment"
+            app:destination="@id/showDetailFragment" />
     </fragment>
 </navigation>

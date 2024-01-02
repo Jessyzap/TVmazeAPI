@@ -136,7 +136,7 @@ class HomeFragment : Fragment() {
                     binding.progressBarHome.visibility = View.GONE
                     Toast.makeText(
                         requireContext(),
-                        "Erro ao carregar os dados",
+                        getString(R.string.error_message),
                         LENGTH_SHORT
                     ).show()
                 }

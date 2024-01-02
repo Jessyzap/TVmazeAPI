@@ -1,5 +1,6 @@
 package com.api.tvmaze.viewModel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,9 @@ import com.api.tvmaze.model.Search
 import com.api.tvmaze.model.Season
 import com.api.tvmaze.model.Show
 import com.api.tvmaze.ui.Pagination
+import com.api.tvmaze.ui.data.RealmManager
+import com.api.tvmaze.ui.data.ShowObject
+import io.realm.RealmResults
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,7 +92,7 @@ class ShowViewModel : ViewModel() {
                     }
 
             } catch (e: Exception) {
-               e.printStackTrace()
+                e.printStackTrace()
             }
         }
     }
@@ -123,7 +127,8 @@ class ShowViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = retrofitClient.create(SearchAPI::class.java).getShowSearchAPI(path).body()
+                val response =
+                    retrofitClient.create(SearchAPI::class.java).getShowSearchAPI(path).body()
 
                 _searchLiveDataList.postValue(
                     Search.mapper(response)
@@ -133,4 +138,71 @@ class ShowViewModel : ViewModel() {
             }
         }
     }
+
+    fun getFavoriteShow(): List<ShowObject> {
+        val realm = RealmManager.getRealmInstance()
+
+        return try {
+            val realmResults: RealmResults<ShowObject> =
+                realm.where(ShowObject::class.java).findAll()
+            realm.copyFromRealm(realmResults) ?: emptyList()
+        } finally {
+            RealmManager.closeRealm()
+        }
+    }
+
+    fun saveFavoriteShow(show: Show) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val realm = RealmManager.getRealmInstance()
+                try {
+                    realm.executeTransaction { realmTransaction ->
+                        val showObject = Show.mapperShowObject(show)
+                        realmTransaction.insert(showObject)
+                    }
+                } finally {
+                    RealmManager.closeRealm()
+                }
+            }
+        }
+    }
+
+    fun deleteFavoriteShow(show: Show): LiveData<Boolean> {
+        val liveData = MutableLiveData<Boolean>()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val realm = RealmManager.getRealmInstance()
+            try {
+                realm.executeTransaction { realmTransaction ->
+                    val showObject = Show.mapperShowObject(show)
+                    val result = realmTransaction.where(ShowObject::class.java)
+                        .equalTo("id", showObject.id)
+                        .findFirst()
+                    result?.deleteFromRealm()
+                    liveData.postValue(true)
+                }
+            } finally {
+                RealmManager.closeRealm()
+            }
+        }
+
+        return liveData
+    }
+
+    fun checkIfIsFavorite(showId: Int?): Boolean {
+        val realm = RealmManager.getRealmInstance()
+
+        try {
+            val result = showId?.let {
+                realm.where(ShowObject::class.java)
+                    .equalTo("id", showId)
+                    .findFirst()
+            }
+            return result != null
+        } finally {
+            RealmManager.closeRealm()
+        }
+    }
+
+
 }

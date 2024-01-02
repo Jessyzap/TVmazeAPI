@@ -5,7 +5,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -38,7 +37,12 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.homeFragment -> {
-                    navController.navigate(R.id.homeFragment, Bundle(bundleOf("force" to true)))
+                    navController.navigate(R.id.homeFragment)
+                    true
+                }
+
+                R.id.favorites -> {
+                    navController.navigate(R.id.favoriteShowFragment)
                     true
                 }
 

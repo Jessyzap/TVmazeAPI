@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.text.parseAsHtml
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -38,6 +39,35 @@ class ShowDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
         observeViewModel()
+        setupFavorite()
+    }
+
+    private fun setupFavorite() {
+        val show = model.showLiveData.value
+        val isFavorite = model.checkIfIsFavorite(show?.id)
+
+        updateFavoriteUI(isFavorite)
+
+        binding.imgFavorite.setOnClickListener {
+            if (model.checkIfIsFavorite(show?.id)) {
+                show?.isFavorite = false
+                updateFavoriteUI(false)
+                show?.let {
+                    model.deleteFavoriteShow(show)
+                }
+            } else {
+                show?.isFavorite = true
+                updateFavoriteUI(true)
+                show?.let {
+                    model.saveFavoriteShow(show)
+                }
+            }
+        }
+    }
+
+    private fun updateFavoriteUI(isFavorite: Boolean) {
+        val tintListRes = if (isFavorite) R.color.pink else R.color.gray
+        binding.imgFavorite.setColorFilter((ContextCompat.getColor(requireContext(), tintListRes)))
     }
 
     private fun setupAdapter() {

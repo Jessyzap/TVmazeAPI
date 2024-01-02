@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/favoriteDelete"
+        android:enabled="true"
+        android:title="@string/delete"/>
+
+</menu>

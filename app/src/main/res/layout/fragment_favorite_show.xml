@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context=".ui.fragments.FavoriteShowFragment"
+        tools:context=".presentation.fragments.FavoriteShowFragment"
         tools:listitem="@layout/item_favorite_show_list" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

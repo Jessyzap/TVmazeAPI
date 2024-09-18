@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.api.tvmaze.ui.fragments.HomeFragment"
+        android:name="com.api.tvmaze.presentation.fragments.HomeFragment"
         android:label="TVmaze"
         tools:layout="@layout/fragment_home">
         <argument
@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/episodeFragment"
-        android:name="com.api.tvmaze.ui.fragments.EpisodeFragment"
+        android:name="com.api.tvmaze.presentation.fragments.EpisodeFragment"
         android:label="TVmaze"
         tools:layout="@layout/fragment_episode">
         <action
@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/showDetailFragment"
-        android:name="com.api.tvmaze.ui.fragments.ShowDetailFragment"
+        android:name="com.api.tvmaze.presentation.fragments.ShowDetailFragment"
         android:label="TVmaze"
         tools:layout="@layout/fragment_show_detail">
         <action
@@ -46,7 +46,7 @@
     </fragment>
     <fragment
         android:id="@+id/episodeDetailFragment"
-        android:name="com.api.tvmaze.ui.fragments.EpisodeDetailFragment"
+        android:name="com.api.tvmaze.presentation.fragments.EpisodeDetailFragment"
         android:label="TVmaze" >
         <action
             android:id="@+id/action_episodeDetailFragment_to_episodeFragment"
@@ -54,7 +54,7 @@
     </fragment>
     <fragment
         android:id="@+id/favoriteShowFragment"
-        android:name="com.api.tvmaze.ui.fragments.FavoriteShowFragment"
+        android:name="com.api.tvmaze.presentation.fragments.FavoriteShowFragment"
         android:label="Favorites" >
         <action
             android:id="@+id/action_favoriteShowFragment_to_showDetailFragment"

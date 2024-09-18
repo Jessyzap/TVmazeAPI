@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".ui.fragments.EpisodeDetailFragment">
+        tools:context=".presentation.fragments.EpisodeDetailFragment">
 
         <ImageView
             android:id="@+id/img_episode"

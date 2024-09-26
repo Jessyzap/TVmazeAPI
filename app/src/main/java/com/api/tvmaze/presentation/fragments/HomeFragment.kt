@@ -151,12 +151,12 @@ class HomeFragment : Fragment() {
 
     private fun navigateToShowDetail(show: Show) {
         findNavController().navigate(R.id.action_homeFragment_to_showDetailFragment)
-        model.response(show)
+        model.setShow(show)
     }
 
     private fun fetchShows(forceFetch: Boolean = false) {
         if (forceFetch || shouldFetchShow) {
-            model.searchLiveDataList.value = null
+            model.clearSearch()
             model.getShows()
             shouldFetchShow = false
         }

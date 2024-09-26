@@ -55,7 +55,7 @@ class EpisodeFragment : Fragment() {
     private fun setupAdapter() {
         adapter = EpisodeListAdapter(requireActivity()) { episode ->
             findNavController().navigate(R.id.action_episodeFragment_to_episodeDetailFragment)
-            model.responseEpisode(episode)
+            model.setEpisode(episode)
         }
         binding.rvEpisode.adapter = adapter
     }

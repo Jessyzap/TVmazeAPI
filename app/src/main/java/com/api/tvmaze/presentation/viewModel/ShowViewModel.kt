@@ -32,34 +32,40 @@ class ShowViewModel : ViewModel() {
 
     var currentSearchQuery: String? = ""
 
-    private var _searchLiveDataList = MutableLiveData<List<Show>>()
-    val searchLiveDataList: MutableLiveData<List<Show>>
+    private val _searchLiveDataList = MutableLiveData<List<Show>?>()
+    val searchLiveDataList: LiveData<List<Show>?>
         get() = _searchLiveDataList
 
     private val _seasonLiveDataList = MutableLiveData<List<Season>>()
-    val seasonLiveDataList: MutableLiveData<List<Season>>
+    val seasonLiveDataList: LiveData<List<Season>>
         get() = _seasonLiveDataList
 
-
-    private var _episodeLiveDataList = MutableLiveData<List<Episode>>()
-    val episodeLiveDataList: MutableLiveData<List<Episode>>
+    private val _episodeLiveDataList = MutableLiveData<List<Episode>>()
+    val episodeLiveDataList: LiveData<List<Episode>>
         get() = _episodeLiveDataList
 
+    private val _showLiveData = MutableLiveData<Show>()
+    val showLiveData: LiveData<Show>
+        get() = _showLiveData
 
-    val showLiveData = MutableLiveData<Show>()
-    val seasonLiveData = MutableLiveData<Season>()
-    val episodeLiveData = MutableLiveData<Episode>()
+    private val _seasonLiveData = MutableLiveData<Season>()
+    val seasonLiveData: LiveData<Season>
+        get() = _seasonLiveData
 
-    fun response(show: Show) {
-        showLiveData.value = show
+    private val _episodeLiveData = MutableLiveData<Episode>()
+    val episodeLiveData: LiveData<Episode>
+        get() = _episodeLiveData
+
+    fun setShow(show: Show) {
+        _showLiveData.value = show
     }
 
-    fun responseSeason(season: Season) {
-        seasonLiveData.value = season
+    fun setSeason(season: Season) {
+        _seasonLiveData.value = season
     }
 
-    fun responseEpisode(episode: Episode) {
-        episodeLiveData.value = episode
+    fun setEpisode(episode: Episode) {
+        _episodeLiveData.value = episode
     }
 
     companion object {
@@ -205,5 +211,8 @@ class ShowViewModel : ViewModel() {
         }
     }
 
+    fun clearSearch() {
+        _searchLiveDataList.value = null
+    }
 
 }

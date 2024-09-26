@@ -72,7 +72,7 @@ class ShowDetailFragment : Fragment() {
 
     private fun setupAdapter() {
         adapter = SeasonListAdapter(requireContext()) { season ->
-            model.responseSeason(season)
+            model.setSeason(season)
             findNavController().navigate(R.id.action_showDetailFragment_to_episodeFragment)
         }
         binding.rvSeason.adapter = adapter

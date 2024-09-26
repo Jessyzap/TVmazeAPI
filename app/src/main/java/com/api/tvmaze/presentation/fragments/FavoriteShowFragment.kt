@@ -99,7 +99,7 @@ class FavoriteShowFragment : Fragment() {
 
     private fun navigateToShowDetail(show: Show) {
         findNavController().navigate(R.id.action_favoriteShowFragment_to_showDetailFragment)
-        model.response(show)
+        model.setShow(show)
     }
 
 }

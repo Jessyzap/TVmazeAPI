@@ -1,4 +1,4 @@
-package com.api.tvmaze.data.datasource.local
+package com.api.tvmaze.core
 
 import android.content.Context
 import io.realm.Realm

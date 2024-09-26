@@ -18,9 +18,8 @@ import com.api.tvmaze.data.model.Search
 import com.api.tvmaze.data.model.Season
 import com.api.tvmaze.data.model.Show
 import com.api.tvmaze.presentation.Pagination
-import com.api.tvmaze.data.datasource.local.RealmManager
 import com.api.tvmaze.data.datasource.local.ShowObject
-import io.realm.RealmResults
+import com.api.tvmaze.data.repository.ShowRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +30,7 @@ import kotlinx.coroutines.withContext
 class ShowViewModel : ViewModel() {
 
     var currentSearchQuery: String? = ""
+    private val repository = ShowRepository()
 
     private val _searchLiveDataList = MutableLiveData<List<Show>?>()
     val searchLiveDataList: LiveData<List<Show>?>
@@ -146,70 +146,13 @@ class ShowViewModel : ViewModel() {
         }
     }
 
-    fun getFavoriteShow(): List<ShowObject> {
-        val realm = RealmManager.getRealmInstance()
+    fun getFavoriteShow(): List<ShowObject> = repository.getFavoriteShows()
 
-        return try {
-            val realmResults: RealmResults<ShowObject> =
-                realm.where(ShowObject::class.java).findAll()
-            realm.copyFromRealm(realmResults) ?: emptyList()
-        } finally {
-            RealmManager.closeRealm()
-        }
-    }
+    fun saveFavoriteShow(show: Show) = repository.saveFavoriteShow(show)
 
-    fun saveFavoriteShow(show: Show) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val realm = RealmManager.getRealmInstance()
-                try {
-                    realm.executeTransaction { realmTransaction ->
-                        val showObject = Show.mapperShowObject(show)
-                        realmTransaction.insert(showObject)
-                    }
-                } finally {
-                    RealmManager.closeRealm()
-                }
-            }
-        }
-    }
+    fun deleteFavoriteShow(show: Show) = repository.deleteFavoriteShow(show)
 
-    fun deleteFavoriteShow(show: Show): LiveData<Boolean> {
-        val liveData = MutableLiveData<Boolean>()
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val realm = RealmManager.getRealmInstance()
-            try {
-                realm.executeTransaction { realmTransaction ->
-                    val showObject = Show.mapperShowObject(show)
-                    val result = realmTransaction.where(ShowObject::class.java)
-                        .equalTo("id", showObject.id)
-                        .findFirst()
-                    result?.deleteFromRealm()
-                    liveData.postValue(true)
-                }
-            } finally {
-                RealmManager.closeRealm()
-            }
-        }
-
-        return liveData
-    }
-
-    fun checkIfIsFavorite(showId: Int?): Boolean {
-        val realm = RealmManager.getRealmInstance()
-
-        try {
-            val result = showId?.let {
-                realm.where(ShowObject::class.java)
-                    .equalTo("id", showId)
-                    .findFirst()
-            }
-            return result != null
-        } finally {
-            RealmManager.closeRealm()
-        }
-    }
+    fun checkIfIsFavorite(showId: Int?) = repository.checkIfIsFavorite(showId)
 
     fun clearSearch() {
         _searchLiveDataList.value = null

@@ -5,7 +5,7 @@ import com.api.tvmaze.data.datasource.remote.ShowRemoteDataSource
 import com.api.tvmaze.data.model.Show
 
 class ShowRepository {
-
+    //todo inject
     private val showLocalDataSource = ShowLocalDataSource()
     private val showRemoteDataSource = ShowRemoteDataSource()
 

@@ -6,6 +6,7 @@ import com.api.tvmaze.data.model.Show
 
 class ShowRepository {
 
+    // todo inject
     private val showLocalDataSource = ShowLocalDataSource()
     private val showRemoteDataSource = ShowRemoteDataSource()
 
@@ -16,5 +17,13 @@ class ShowRepository {
     fun deleteFavoriteShow(show: Show) = showLocalDataSource.deleteFavoriteShow(show)
 
     fun checkIfIsFavorite(showId: Int?) = showLocalDataSource.checkIfIsFavorite(showId)
+
+    suspend fun getShows(page: Int) = showRemoteDataSource.getShows(page)
+
+    suspend fun getSeasons(id: Int) = showRemoteDataSource.getSeasons(id)
+
+    suspend fun getEpisodes(seasonId: Int) = showRemoteDataSource.getEpisodes(seasonId)
+
+    suspend fun getSearch(path: String) = showRemoteDataSource.getSearch(path)
 
 }

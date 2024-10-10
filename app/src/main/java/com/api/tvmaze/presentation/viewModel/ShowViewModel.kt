@@ -8,18 +8,15 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.api.tvmaze.data.datasource.service.EpisodeAPI
-import com.api.tvmaze.core.Network
-import com.api.tvmaze.data.datasource.service.SearchAPI
-import com.api.tvmaze.data.datasource.service.SeasonAPI
+import com.api.tvmaze.core.network.ResponseWrapper
+import com.api.tvmaze.data.datasource.local.ShowObject
 import com.api.tvmaze.data.datasource.service.ShowAPI
 import com.api.tvmaze.data.model.Episode
 import com.api.tvmaze.data.model.Search
 import com.api.tvmaze.data.model.Season
 import com.api.tvmaze.data.model.Show
-import com.api.tvmaze.presentation.Pagination
-import com.api.tvmaze.data.datasource.local.ShowObject
 import com.api.tvmaze.data.repository.ShowRepository
+import com.api.tvmaze.presentation.Pagination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +27,7 @@ import kotlinx.coroutines.withContext
 class ShowViewModel : ViewModel() {
 
     var currentSearchQuery: String? = ""
-    private val repository = ShowRepository()
+    private val repository = ShowRepository() //todo inject
 
     private val _searchLiveDataList = MutableLiveData<List<Show>?>()
     val searchLiveDataList: LiveData<List<Show>?>
@@ -68,26 +65,17 @@ class ShowViewModel : ViewModel() {
         _episodeLiveData.value = episode
     }
 
-    companion object {
-        const val URL = "https://api.tvmaze.com"
-    }
-
-    private val retrofitClient = Network.retrofitConfig(URL)
-
     private val _pagingData: MutableStateFlow<PagingData<Show>> =
         MutableStateFlow(PagingData.empty())
     val pagingData: Flow<PagingData<Show>> = _pagingData
 
 
     fun getShows() {
-        val call = retrofitClient.create(ShowAPI::class.java)
-
         viewModelScope.launch(Dispatchers.IO) {
-
             try {
                 val pager = Pager(
                     config = PagingConfig(pageSize = 250),
-                    pagingSourceFactory = { Pagination(call) }
+                    pagingSourceFactory = { Pagination(ShowAPI::class.java) }
                 )
                 pager
                     .flow
@@ -108,9 +96,15 @@ class ShowViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _seasonLiveDataList.postValue(
-                    retrofitClient.create(SeasonAPI::class.java).getSeasonAPI(id).body()
-                )
+                when (val response = repository.getSeasons(id)) {
+                    is ResponseWrapper.SuccessResult<List<Season>> -> {
+                        _seasonLiveDataList.postValue(response.result)
+                    }
+
+                    is ResponseWrapper.ErrorResult -> {
+                        _seasonLiveDataList.postValue(ArrayList())
+                    }
+                }
             } catch (e: Exception) {
                 _seasonLiveDataList.postValue(ArrayList())
             }
@@ -118,12 +112,17 @@ class ShowViewModel : ViewModel() {
     }
 
     fun getEpisodes(seasonId: Int) {
-
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _episodeLiveDataList.postValue(
-                    retrofitClient.create(EpisodeAPI::class.java).getEpisodeAPI(seasonId).body()
-                )
+                when (val response = repository.getEpisodes(seasonId)) {
+                    is ResponseWrapper.SuccessResult<List<Episode>> -> {
+                        _episodeLiveDataList.postValue(response.result)
+                    }
+
+                    is ResponseWrapper.ErrorResult -> {
+                        _episodeLiveDataList.postValue(ArrayList())
+                    }
+                }
             } catch (e: Exception) {
                 _episodeLiveDataList.postValue(ArrayList())
             }
@@ -131,15 +130,17 @@ class ShowViewModel : ViewModel() {
     }
 
     fun getSearch(path: String) {
-
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response =
-                    retrofitClient.create(SearchAPI::class.java).getShowSearchAPI(path).body()
+                when (val response = repository.getSearch(path)) {
+                    is ResponseWrapper.SuccessResult<List<Search>> -> {
+                        _searchLiveDataList.postValue(Search.mapper(response.result))
+                    }
 
-                _searchLiveDataList.postValue(
-                    Search.mapper(response)
-                )
+                    is ResponseWrapper.ErrorResult -> {
+                        _searchLiveDataList.postValue(ArrayList())
+                    }
+                }
             } catch (e: Exception) {
                 _searchLiveDataList.postValue(ArrayList())
             }

@@ -2,14 +2,18 @@ package com.api.tvmaze.presentation
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.api.tvmaze.core.network.retrofitConfig
 import com.api.tvmaze.data.datasource.service.ShowAPI
 import com.api.tvmaze.data.model.Show
 
-class Pagination(private val api: ShowAPI) : PagingSource<Int, Show>() {
+class Pagination(private val api: Class<ShowAPI>) : PagingSource<Int, Show>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Show> {
         return try {
+
+            val call = retrofitConfig.create(api)
+
             val nextPageNumber = params.key ?: 0
-            val response = api.getShowAPI(nextPageNumber)
+            val response = call.getShowAPI(nextPageNumber)
 
             if (response.isSuccessful) {
                 val shows = response.body() ?: emptyList()

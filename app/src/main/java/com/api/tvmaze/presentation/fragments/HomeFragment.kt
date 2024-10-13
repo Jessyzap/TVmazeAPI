@@ -1,8 +1,6 @@
 package com.api.tvmaze.presentation.fragments
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,14 +15,13 @@ import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import com.api.tvmaze.R
-import com.api.tvmaze.databinding.FragmentHomeBinding
 import com.api.tvmaze.data.model.Show
+import com.api.tvmaze.databinding.FragmentHomeBinding
 import com.api.tvmaze.presentation.adapter.HomeListAdapter
-import com.api.tvmaze.utils.hideKeyboard
 import com.api.tvmaze.presentation.viewModel.ShowViewModel
+import com.api.tvmaze.utils.hideKeyboard
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-
 
 class HomeFragment : Fragment() {
 

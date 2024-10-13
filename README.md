@@ -10,6 +10,7 @@ This is an Android application developed in Kotlin that allows users to explore 
 - **Navigation Component**: For efficient screen navigation
 - **Paging**: To manage large volumes of data effectively
 - **Retrofit**: For HTTP requests and API consumption
+- **Hilt**: For dependency injection
 
 ## Features
 

@@ -10,11 +10,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-class ShowLocalDataSource {
+class ShowLocalDataSourceImpl : IShowLocalDataSource {
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    fun getFavoriteShows(): List<ShowObject> {
+    override fun getFavoriteShows(): List<ShowObject> {
         val realm = Realm.getDefaultInstance()
         return try {
             val realmResults: RealmResults<ShowObject> =
@@ -26,7 +26,7 @@ class ShowLocalDataSource {
         }
     }
 
-    fun saveFavoriteShow(show: Show) {
+    override fun saveFavoriteShow(show: Show) {
         coroutineScope.launch(Dispatchers.IO) {
             val realm = Realm.getDefaultInstance()
             try {
@@ -40,7 +40,7 @@ class ShowLocalDataSource {
         }
     }
 
-    fun deleteFavoriteShow(show: Show): LiveData<Boolean> {
+    override fun deleteFavoriteShow(show: Show): LiveData<Boolean> {
         val liveData = MutableLiveData<Boolean>()
 
         coroutineScope.launch(Dispatchers.IO) {
@@ -65,7 +65,7 @@ class ShowLocalDataSource {
         return liveData
     }
 
-    fun checkIfIsFavorite(showId: Int?): Boolean {
+    override fun checkIfIsFavorite(showId: Int?): Boolean {
         val realm = Realm.getDefaultInstance()
         return try {
             val result = showId?.let {

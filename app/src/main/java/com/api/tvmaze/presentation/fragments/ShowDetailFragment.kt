@@ -14,8 +14,9 @@ import com.api.tvmaze.R
 import com.api.tvmaze.databinding.FragmentShowDetailBinding
 import com.api.tvmaze.presentation.adapter.SeasonListAdapter
 import com.api.tvmaze.presentation.viewModel.ShowViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class ShowDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentShowDetailBinding

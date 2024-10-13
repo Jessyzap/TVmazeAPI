@@ -20,9 +20,11 @@ import com.api.tvmaze.databinding.FragmentHomeBinding
 import com.api.tvmaze.presentation.adapter.HomeListAdapter
 import com.api.tvmaze.presentation.viewModel.ShowViewModel
 import com.api.tvmaze.utils.hideKeyboard
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding

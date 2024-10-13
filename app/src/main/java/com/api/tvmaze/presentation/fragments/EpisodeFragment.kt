@@ -11,8 +11,9 @@ import com.api.tvmaze.R
 import com.api.tvmaze.databinding.FragmentEpisodeBinding
 import com.api.tvmaze.presentation.adapter.EpisodeListAdapter
 import com.api.tvmaze.presentation.viewModel.ShowViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class EpisodeFragment : Fragment() {
 
     private lateinit var binding: FragmentEpisodeBinding

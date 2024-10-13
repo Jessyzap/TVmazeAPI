@@ -15,8 +15,9 @@ import com.api.tvmaze.data.model.Episode
 import com.api.tvmaze.data.model.Search
 import com.api.tvmaze.data.model.Season
 import com.api.tvmaze.data.model.Show
-import com.api.tvmaze.data.repository.ShowRepository
+import com.api.tvmaze.domain.IShowRepository
 import com.api.tvmaze.presentation.Pagination
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -25,12 +26,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class ShowViewModel : ViewModel() {
+@HiltViewModel
+class ShowViewModel @Inject constructor(
+    private val repository: IShowRepository
+) : ViewModel() {
 
     private var searchJob: Job? = null
     private var currentSearchQuery: String? = ""
-    private val repository = ShowRepository() //todo inject
 
     private val _searchLiveDataList = MutableLiveData<List<Show>?>()
     val searchLiveDataList: LiveData<List<Show>?>

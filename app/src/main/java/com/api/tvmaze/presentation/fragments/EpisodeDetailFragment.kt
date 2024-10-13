@@ -10,8 +10,9 @@ import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.api.tvmaze.databinding.FragmentEpisodeDetailBinding
 import com.api.tvmaze.presentation.viewModel.ShowViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class EpisodeDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentEpisodeDetailBinding

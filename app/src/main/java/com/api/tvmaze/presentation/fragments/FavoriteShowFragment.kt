@@ -16,7 +16,9 @@ import com.api.tvmaze.databinding.FragmentFavoriteShowBinding
 import com.api.tvmaze.data.model.Show
 import com.api.tvmaze.presentation.adapter.FavoriteShowAdapter
 import com.api.tvmaze.presentation.viewModel.ShowViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FavoriteShowFragment : Fragment() {
 
     private lateinit var binding: FragmentFavoriteShowBinding

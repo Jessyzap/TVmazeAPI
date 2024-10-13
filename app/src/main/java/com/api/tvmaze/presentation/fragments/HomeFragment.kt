@@ -32,8 +32,6 @@ class HomeFragment : Fragment() {
     private lateinit var model: ShowViewModel
     private var adapter: HomeListAdapter? = null
     private var forceFetchArg: Boolean = false
-    private val handler = Handler(Looper.getMainLooper())
-    private var runnable: Runnable? = null
     private var shouldFetchShow: Boolean = false
     private var loadStateListener: ((CombinedLoadStates) -> Unit)? = null
 
@@ -75,16 +73,7 @@ class HomeFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                runnable?.let { handler.removeCallbacks(it) }
-
-                if (newText != model.currentSearchQuery && (newText?.length ?: 0) >= 2) {
-                    runnable = Runnable {
-                        model.getSearch(newText.orEmpty())
-                    }
-
-                    runnable?.let { handler.postDelayed(it, 800) }
-                    model.currentSearchQuery = newText
-                }
+                model.onSearchQueryChanged(newText.orEmpty())
                 return true
             }
         })

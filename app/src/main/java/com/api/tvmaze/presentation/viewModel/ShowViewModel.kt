@@ -18,6 +18,8 @@ import com.api.tvmaze.data.model.Show
 import com.api.tvmaze.data.repository.ShowRepository
 import com.api.tvmaze.presentation.Pagination
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -26,7 +28,8 @@ import kotlinx.coroutines.withContext
 
 class ShowViewModel : ViewModel() {
 
-    var currentSearchQuery: String? = ""
+    private var searchJob: Job? = null
+    private var currentSearchQuery: String? = ""
     private val repository = ShowRepository() //todo inject
 
     private val _searchLiveDataList = MutableLiveData<List<Show>?>()
@@ -52,6 +55,20 @@ class ShowViewModel : ViewModel() {
     private val _episodeLiveData = MutableLiveData<Episode>()
     val episodeLiveData: LiveData<Episode>
         get() = _episodeLiveData
+
+    fun onSearchQueryChanged(query: String) {
+        searchJob?.cancel()
+
+        if (query.length >= 2) {
+            searchJob = viewModelScope.launch {
+                delay(800L)
+                if (query != currentSearchQuery) {
+                    currentSearchQuery = query
+                    getSearch(query)
+                }
+            }
+        }
+    }
 
     fun setShow(show: Show) {
         _showLiveData.value = show
@@ -129,7 +146,7 @@ class ShowViewModel : ViewModel() {
         }
     }
 
-    fun getSearch(path: String) {
+    private fun getSearch(path: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 when (val response = repository.getSearch(path)) {

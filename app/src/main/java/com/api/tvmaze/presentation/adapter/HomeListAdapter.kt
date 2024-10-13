@@ -23,16 +23,7 @@ class HomeListAdapter(
             show.image?.medium?.let { binding.movieImage.load(it) }
 
             itemView.setOnClickListener {
-                callback.invoke(
-                    Show(
-                        show.id,
-                        show.genres,
-                        show.schedule,
-                        show.image,
-                        show.name,
-                        show.summary
-                    )
-                )
+                callback.invoke(show)
             }
         }
     }

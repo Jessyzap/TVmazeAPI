@@ -44,18 +44,7 @@ class EpisodeListAdapter(
         episodeList[position].image?.original?.let { holder.image.load(it) }
 
         holder.itemView.setOnClickListener {
-            with(episodeList[position]) {
-                callback.invoke(
-                    Episode(
-                        id = id,
-                        name = name,
-                        image = image,
-                        season = season,
-                        number = number,
-                        summary = summary
-                    )
-                )
-            }
+            callback.invoke(episodeList[position])
         }
     }
 

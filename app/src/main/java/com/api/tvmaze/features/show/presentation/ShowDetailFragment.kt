@@ -52,15 +52,17 @@ class ShowDetailFragment : Fragment() {
 
     private fun setupFavorite() {
         val show = model.showLiveData.value
-        val isFavorite = model.checkIfIsFavorite(show?.id)
+        model.checkIfIsFavorite(show?.id).observe(viewLifecycleOwner) { isFavorite ->
+            show?.isFavorite = isFavorite
+            updateFavoriteUI(isFavorite)
+        }
 
-        updateFavoriteUI(isFavorite)
 
         binding.imgFavorite.setOnClickListener {
-            if (model.checkIfIsFavorite(show?.id)) {
-                show?.isFavorite = false
+            if (show?.isFavorite == true) {
+                show.isFavorite = false
                 updateFavoriteUI(false)
-                show?.let {
+                show.let {
                     model.deleteFavoriteShow(show)
                 }
             } else {

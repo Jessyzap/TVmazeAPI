@@ -6,15 +6,17 @@ import com.api.tvmaze.features.favorite_show.data.model.ShowObject
 import javax.inject.Inject
 
 class FavoriteShowRepositoryImpl @Inject constructor(
-    private val showLocalDataSource: IFavoriteShowLocalDataSource,
+    private val favoriteShowLocalDataSource: IFavoriteShowLocalDataSource,
 ) : IFavoriteShowRepository {
 
-    override fun getFavoriteShows() = showLocalDataSource.getFavoriteShows()
+    override fun getFavoriteShows() = favoriteShowLocalDataSource.getFavoriteShows()
 
-    override fun saveFavoriteShow(show: ShowObject) = showLocalDataSource.saveFavoriteShow(show)
+    override fun saveFavoriteShow(show: ShowObject) = favoriteShowLocalDataSource.saveFavoriteShow(show)
 
-    override fun deleteFavoriteShow(show: ShowObject) = showLocalDataSource.deleteFavoriteShow(show)
+    override fun deleteFavoriteShow(show: ShowObject) = favoriteShowLocalDataSource.deleteFavoriteShow(show)
 
-    override fun checkIfIsFavorite(showId: Int?) = showLocalDataSource.checkIfIsFavorite(showId)
+    override fun checkIfIsFavorite(showId: Int?) = favoriteShowLocalDataSource.checkIfIsFavorite(showId)
+
+    override fun closeRealm() = favoriteShowLocalDataSource.closeRealm()
 
 }

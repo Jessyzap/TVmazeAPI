@@ -6,34 +6,47 @@ import com.api.tvmaze.features.favorite_show.data.model.ShowObject
 import io.realm.Realm
 import io.realm.RealmResults
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 
 class IFavoriteShowLocalDataSourceImpl : IFavoriteShowLocalDataSource {
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    @OptIn(DelicateCoroutinesApi::class)
+    private val realmThread = newSingleThreadContext("RealmThread")
+    private val coroutineScope = CoroutineScope(realmThread + SupervisorJob())
 
-    override fun getFavoriteShows(): List<ShowObject> {
-        val realm = Realm.getDefaultInstance()
-        return try {
-            val realmResults: RealmResults<ShowObject> =
-                realm.where(ShowObject::class.java).findAll()
-            realm.copyFromRealm(realmResults) ?: emptyList()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emptyList()
+    private var realm: Realm? = null
+
+    init {
+        coroutineScope.launch(realmThread) {
+            realm = Realm.getDefaultInstance()
         }
     }
 
-    override fun saveFavoriteShow(show: ShowObject) {
-        coroutineScope.launch(Dispatchers.IO) {
-            val realm = Realm.getDefaultInstance()
+    override fun getFavoriteShows(): LiveData<List<ShowObject>> {
+        val liveData = MutableLiveData<List<ShowObject>>()
+        coroutineScope.launch(realmThread) {
             try {
-                realm.executeTransaction { realmTransaction ->
-                 //   val showObject = Show.mapperShowObject(show)
-                    realmTransaction.insert(show)
-                }
+                realm?.let { realmInstance ->
+                    val realmResults: RealmResults<ShowObject> =
+                        realmInstance.where(ShowObject::class.java).findAll()
+                    liveData.postValue(realmInstance.copyFromRealm(realmResults) ?: emptyList())
+                } ?: liveData.postValue(emptyList())
+            } catch (e: Exception) {
+                e.printStackTrace()
+                liveData.postValue(emptyList())
+            }
+        }
+        return liveData
+    }
+
+    override fun saveFavoriteShow(show: ShowObject) {
+        coroutineScope.launch(realmThread) {
+            try {
+                realm?.executeTransaction { it.insert(show) }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -42,13 +55,10 @@ class IFavoriteShowLocalDataSourceImpl : IFavoriteShowLocalDataSource {
 
     override fun deleteFavoriteShow(show: ShowObject): LiveData<Boolean> {
         val liveData = MutableLiveData<Boolean>()
-
-        coroutineScope.launch(Dispatchers.IO) {
-            val realm = Realm.getDefaultInstance()
+        coroutineScope.launch(realmThread) {
             try {
-                realm.executeTransaction { realmTransaction ->
-               //     val showObject = Show.mapperShowObject(show)
-                    val result = realmTransaction.where(ShowObject::class.java)
+                realm?.executeTransaction { transaction ->
+                    val result = transaction.where(ShowObject::class.java)
                         .equalTo("id", show.id)
                         .findFirst()
 
@@ -61,24 +71,32 @@ class IFavoriteShowLocalDataSourceImpl : IFavoriteShowLocalDataSource {
                 liveData.postValue(false)
             }
         }
-
         return liveData
     }
 
-    override fun checkIfIsFavorite(showId: Int?): Boolean {
-        val realm = Realm.getDefaultInstance()
-        return try {
-            val result = showId?.let {
-                realm.where(ShowObject::class.java)
-                    .equalTo("id", showId)
-                    .findFirst()
+    override fun checkIfIsFavorite(showId: Int?): LiveData<Boolean> {
+        val liveData = MutableLiveData<Boolean>()
+        coroutineScope.launch(realmThread) {
+            try {
+                val result = showId?.let {
+                    realm?.where(ShowObject::class.java)
+                        ?.equalTo("id", showId)
+                        ?.findFirst()
+                }
+                liveData.postValue(result != null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                liveData.postValue(false)
             }
-            result != null
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
         }
+        return liveData
     }
 
-    //todo close realm
+    override fun closeRealm() {
+        coroutineScope.launch(realmThread){
+            realm?.close()
+            realmThread.close()
+            coroutineScope.cancel()
+        }
+    }
 }

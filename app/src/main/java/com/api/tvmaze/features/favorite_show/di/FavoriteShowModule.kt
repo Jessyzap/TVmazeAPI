@@ -23,7 +23,7 @@ object FavoriteShowModule {
     fun bindRepository(
         localDataSource: IFavoriteShowLocalDataSource
     ): IFavoriteShowRepository = FavoriteShowRepositoryImpl(
-        showLocalDataSource = localDataSource,
+        favoriteShowLocalDataSource = localDataSource
     )
 
 }

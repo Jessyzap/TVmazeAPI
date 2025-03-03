@@ -27,7 +27,7 @@ class FavoriteShowFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        model = ViewModelProvider(requireActivity())[FavoriteShowViewModel::class.java]
+        model = ViewModelProvider(this)[FavoriteShowViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -46,8 +46,9 @@ class FavoriteShowFragment : Fragment() {
     }
 
     private fun fetchFavorites() {
-        val favoritesShows = model.getFavoriteShow()
-        adapter.updateList(favoritesShows)
+        model.getFavoriteShow().observe(viewLifecycleOwner) { favoritesShows ->
+            adapter.updateList(favoritesShows)
+        }
     }
 
     private fun setupAdapter() {

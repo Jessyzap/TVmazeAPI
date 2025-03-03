@@ -1,5 +1,6 @@
 package com.api.tvmaze.features.favorite_show.presentation.viewModel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.api.tvmaze.features.favorite_show.domain.IFavoriteShowRepository
 import com.api.tvmaze.features.favorite_show.data.model.ShowObject
@@ -11,12 +12,13 @@ class FavoriteShowViewModel @Inject constructor(
     private val repository: IFavoriteShowRepository
 ) : ViewModel() {
 
-    fun getFavoriteShow(): List<ShowObject> = repository.getFavoriteShows()
-
-    fun saveFavoriteShow(show: ShowObject) = repository.saveFavoriteShow(show)
+    fun getFavoriteShow(): LiveData<List<ShowObject>> = repository.getFavoriteShows()
 
     fun deleteFavoriteShow(show: ShowObject) = repository.deleteFavoriteShow(show)
 
-    fun checkIfIsFavorite(showId: Int?) = repository.checkIfIsFavorite(showId)
+    override fun onCleared() {
+        super.onCleared()
+        repository.closeRealm()
+    }
 
 }

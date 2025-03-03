@@ -182,4 +182,9 @@ class ShowViewModel @Inject constructor(
         _searchLiveDataList.value = null
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        favoriteRepository.closeRealm()
+    }
+
 }

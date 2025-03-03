@@ -21,11 +21,11 @@ class NetworkRequestHandler {
                         result?.let {
                             ResponseWrapper.SuccessResult(result = it)
                         } ?: run {
-                            ResponseWrapper.ErrorResult(message = "Erro ao carregar os dados")
+                            ResponseWrapper.ErrorResult(message = "Error loading data")
                         }
                     } else {
                         ResponseWrapper.ErrorResult(
-                            message = response.errorBody()?.string() ?: "Erro desconhecido"
+                            message = response.errorBody()?.string() ?: "Unknown error"
                         )
                     }
                 }

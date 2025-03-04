@@ -3,7 +3,7 @@ package com.api.tvmaze.features.favorite_show.data.model
 import com.api.tvmaze.features.show.data.model.ImageType
 import com.api.tvmaze.features.show.data.model.ScheduleType
 import com.api.tvmaze.features.show.data.model.Show
-import com.api.tvmaze.utils.ID
+import com.api.tvmaze.utils.DiffIdentifiable
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
@@ -16,9 +16,9 @@ open class ShowObject(
     var image: ImageTypeObject? = null,
     var name: String = "",
     var summary: String? = null
-) : RealmObject(), ID {
+) : RealmObject(), DiffIdentifiable {
 
-    override val objId: Int
+    override val diffId: Int
         get() = id
 
     companion object {

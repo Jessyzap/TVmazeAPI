@@ -1,9 +1,7 @@
 package com.api.tvmaze.features.show.data.model
 
 import android.os.Parcelable
-import com.api.tvmaze.features.show.data.model.ImageType
-import com.api.tvmaze.features.show.data.model.ScheduleType
-import com.api.tvmaze.utils.ID
+import com.api.tvmaze.utils.DiffIdentifiable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -15,8 +13,8 @@ data class Show(
     val name: String,
     val summary: String?,
     var isFavorite: Boolean = false
-) : Parcelable, ID {
-    override val objId: Int
+) : Parcelable, DiffIdentifiable {
+    override val diffId: Int
         get() = id
 
 }

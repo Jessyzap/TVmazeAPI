@@ -54,10 +54,18 @@ class ShowHomeFragment : Fragment() {
         getArgs()
         setupAdapter()
         fetchShows(forceFetch = forceFetchArg)
+        setupRefresh()
         setupSearch()
         submitShowListToPagingAdapter()
         handleState()
         searchObserver()
+    }
+
+    private fun setupRefresh() {
+        binding.swp.setOnRefreshListener {
+            fetchShows(forceFetch = true)
+            binding.searchView.setQuery("", false)
+        }
     }
 
     private fun getArgs() {
@@ -147,6 +155,7 @@ class ShowHomeFragment : Fragment() {
             model.clearSearch()
             model.getShows()
             shouldFetchShow = false
+            binding.swp.isRefreshing = false
         }
     }
 

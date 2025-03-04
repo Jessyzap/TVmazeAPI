@@ -15,19 +15,39 @@ import kotlinx.coroutines.newSingleThreadContext
 class IFavoriteShowLocalDataSourceImpl : IFavoriteShowLocalDataSource {
 
     @OptIn(DelicateCoroutinesApi::class)
-    private val realmThread = newSingleThreadContext("RealmThread")
-    private val coroutineScope = CoroutineScope(realmThread + SupervisorJob())
-
+    private var realmThread = newSingleThreadContext("RealmThread")
+    private var coroutineScope = CoroutineScope(realmThread + SupervisorJob())
     private var realm: Realm? = null
+    private var isClosed = false
 
     init {
-        coroutineScope.launch(realmThread) {
-            realm = Realm.getDefaultInstance()
+        createOrGetRealmInstance()
+    }
+
+    private fun createOrGetRealmInstance() {
+        if (realm == null || realm?.isClosed == true) {
+            coroutineScope.launch(realmThread) {
+                try {
+                    realm = Realm.getDefaultInstance()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun shouldRestoreInstanceAndScope() {
+        if (isClosed) {
+            realmThread = newSingleThreadContext("RealmThread")
+            coroutineScope = CoroutineScope(realmThread + SupervisorJob())
+            createOrGetRealmInstance()
+            isClosed = false
         }
     }
 
     override fun getFavoriteShows(): LiveData<List<ShowObject>> {
         val liveData = MutableLiveData<List<ShowObject>>()
+        shouldRestoreInstanceAndScope()
         coroutineScope.launch(realmThread) {
             try {
                 realm?.let { realmInstance ->
@@ -44,6 +64,7 @@ class IFavoriteShowLocalDataSourceImpl : IFavoriteShowLocalDataSource {
     }
 
     override fun saveFavoriteShow(show: ShowObject) {
+        shouldRestoreInstanceAndScope()
         coroutineScope.launch(realmThread) {
             try {
                 realm?.executeTransaction { it.insert(show) }
@@ -54,6 +75,7 @@ class IFavoriteShowLocalDataSourceImpl : IFavoriteShowLocalDataSource {
     }
 
     override fun deleteFavoriteShow(show: ShowObject): LiveData<Boolean> {
+        shouldRestoreInstanceAndScope()
         val liveData = MutableLiveData<Boolean>()
         coroutineScope.launch(realmThread) {
             try {
@@ -75,6 +97,7 @@ class IFavoriteShowLocalDataSourceImpl : IFavoriteShowLocalDataSource {
     }
 
     override fun checkIfIsFavorite(showId: Int?): LiveData<Boolean> {
+        shouldRestoreInstanceAndScope()
         val liveData = MutableLiveData<Boolean>()
         coroutineScope.launch(realmThread) {
             try {
@@ -93,10 +116,12 @@ class IFavoriteShowLocalDataSourceImpl : IFavoriteShowLocalDataSource {
     }
 
     override fun closeRealm() {
-        coroutineScope.launch(realmThread){
+        coroutineScope.launch(realmThread) {
             realm?.close()
             realmThread.close()
             coroutineScope.cancel()
+            realm = null
+            isClosed = true
         }
     }
 }

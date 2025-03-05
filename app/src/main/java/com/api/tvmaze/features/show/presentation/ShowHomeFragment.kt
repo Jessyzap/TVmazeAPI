@@ -30,14 +30,11 @@ class ShowHomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var model: ShowViewModel
     private var adapter: HomeListAdapter? = null
-    private var forceFetchArg: Boolean = false
-    private var shouldFetchShow: Boolean = false
     private var loadStateListener: ((CombinedLoadStates) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         model = ViewModelProvider(requireActivity())[ShowViewModel::class.java]
-        shouldFetchShow = true
     }
 
     override fun onCreateView(
@@ -52,17 +49,16 @@ class ShowHomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupAdapter()
-        fetchShows(forceFetch = forceFetchArg)
+        fetchShows()
         setupRefresh()
         setupSearch()
-        submitShowListToPagingAdapter()
         handleState()
         searchObserver()
     }
 
     private fun setupRefresh() {
         binding.swp.setOnRefreshListener {
-            fetchShows(forceFetch = true)
+            fetchShows(true)
             binding.searchView.setQuery("", false)
         }
     }
@@ -96,11 +92,9 @@ class ShowHomeFragment : Fragment() {
     }
 
     private fun submitShowListToPagingAdapter() {
-        if (model.searchLiveDataList.value.isNullOrEmpty()) {
-            lifecycleScope.launch {
-                model.pagingData.collectLatest { pagingData ->
-                    adapter?.submitData(pagingData)
-                }
+        lifecycleScope.launch {
+            model.pagingData.collectLatest { pagingData ->
+                adapter?.submitData(pagingData)
             }
         }
     }
@@ -146,11 +140,11 @@ class ShowHomeFragment : Fragment() {
     }
 
     private fun fetchShows(forceFetch: Boolean = false) {
-        if (forceFetch || shouldFetchShow) {
+        if (forceFetch || model.searchLiveDataList.value.isNullOrEmpty()) {
             model.clearSearch()
             model.getShows()
-            shouldFetchShow = false
             binding.swp.isRefreshing = false
+            submitShowListToPagingAdapter()
         }
     }
 

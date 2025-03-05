@@ -51,7 +51,6 @@ class ShowHomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getArgs()
         setupAdapter()
         fetchShows(forceFetch = forceFetchArg)
         setupRefresh()
@@ -66,10 +65,6 @@ class ShowHomeFragment : Fragment() {
             fetchShows(forceFetch = true)
             binding.searchView.setQuery("", false)
         }
-    }
-
-    private fun getArgs() {
-        forceFetchArg = arguments?.getBoolean("force") ?: false
     }
 
     private fun setupSearch() {

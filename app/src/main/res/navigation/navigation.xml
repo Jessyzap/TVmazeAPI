@@ -10,9 +10,6 @@
         android:name="com.api.tvmaze.features.show.presentation.ShowHomeFragment"
         android:label="TVmaze"
         tools:layout="@layout/fragment_home">
-        <argument
-            android:name="force"
-            app:argType="boolean" />
         <action
             android:id="@+id/action_homeFragment_to_showDetailFragment"
             app:destination="@id/showDetailFragment" />

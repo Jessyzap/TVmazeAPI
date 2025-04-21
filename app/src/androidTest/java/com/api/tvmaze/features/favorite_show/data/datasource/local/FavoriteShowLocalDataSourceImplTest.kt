@@ -6,6 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.api.tvmaze.features.favorite_show.data.model.ShowObject
 import com.api.tvmaze.getOrAwaitValue
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -27,6 +28,11 @@ class FavoriteShowLocalDataSourceImplTest {
     @Before
     fun setUp() {
         Realm.init(InstrumentationRegistry.getInstrumentation().targetContext)
+        val config = RealmConfiguration.Builder()
+            .inMemory()
+            .build()
+        Realm.setDefaultConfiguration(config)
+
         dataSource = FavoriteShowLocalDataSourceImpl()
 
         testShow = ShowObject().apply {

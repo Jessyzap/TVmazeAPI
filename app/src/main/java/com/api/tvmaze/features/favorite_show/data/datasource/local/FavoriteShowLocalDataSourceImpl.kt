@@ -12,7 +12,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 
-class IFavoriteShowLocalDataSourceImpl : IFavoriteShowLocalDataSource {
+class FavoriteShowLocalDataSourceImpl : IFavoriteShowLocalDataSource {
 
     @OptIn(DelicateCoroutinesApi::class)
     private var realmThread = newSingleThreadContext("RealmThread")

@@ -36,7 +36,11 @@ class ShowViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var searchJob: Job? = null
+    val searchCurrentJob
+        get() = searchJob
     private var currentSearchQuery: String? = ""
+    val searchCurrentSearchQuery
+        get() = currentSearchQuery
 
     private val _searchLiveDataList = MutableLiveData<List<Show>?>()
     val searchLiveDataList: LiveData<List<Show>?>

@@ -39,6 +39,16 @@ android {
         jvmTarget = '1.8'
     }
     namespace 'com.api.tvmaze'
+
+    // Duplicated classes resolution
+    packagingOptions {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
+        }
+    }
+
 }
 
 kapt {
@@ -75,7 +85,22 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.6'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    testImplementation("junit:junit:4.13.2")
+
+    implementation 'androidx.test:core-ktx:1.6.1'
+    testImplementation "androidx.arch.core:core-testing:2.2.0"
+    testImplementation 'org.robolectric:robolectric:4.10'
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1"
+    testImplementation "io.mockk:mockk:1.13.5"
+    testImplementation "junit:junit:4.13.2"
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation "androidx.arch.core:core-testing:2.2.0"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1"
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.0"
+    androidTestImplementation "io.mockk:mockk-android:1.13.5"
+    androidTestImplementation "androidx.test:runner:1.6.1"
+    androidTestImplementation "androidx.test:rules:1.6.1"
+    testImplementation "junit:junit:4.13.2"
+    implementation "org.jetbrains.kotlin:kotlin-test:2.0.0"
 }

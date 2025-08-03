@@ -32,7 +32,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ShowViewModel @Inject constructor(
     private val repository: IShowRepository,
-    private val favoriteRepository: IFavoriteShowRepository
+    private val favoriteRepository: IFavoriteShowRepository,
+    private val showAPI: ShowAPI
 ) : ViewModel() {
 
     private var searchJob: Job? = null
@@ -102,7 +103,7 @@ class ShowViewModel @Inject constructor(
             try {
                 val pager = Pager(
                     config = PagingConfig(pageSize = 250),
-                    pagingSourceFactory = { Pagination(ShowAPI::class.java) }
+                    pagingSourceFactory = { Pagination(showAPI) }
                 )
                 pager
                     .flow

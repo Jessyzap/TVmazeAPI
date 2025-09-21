@@ -1,20 +1,18 @@
 package com.api.tvmaze.features.show.data.model
 
 import android.os.Parcelable
-import com.api.tvmaze.utils.DiffIdentifiable
-import com.google.gson.annotations.SerializedName
+import com.api.tvmaze.features.show.domain.entity.SeasonEntity
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Season(
-    @SerializedName("id") val id: Int,
-    @SerializedName("number") val number: Int,
+    val id: Int,
+    val number: Int
+) : Parcelable {
 
-    ) : Parcelable, DiffIdentifiable {
-    override val diffId: Int
-        get() = id
+    fun toEntity() = SeasonEntity(
+        id = id,
+        seasonDetail = "Season $number"
+    )
 
-    fun seasonDetail(): String {
-        return "Season $number"
-    }
 }

@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import coil.load
 import com.api.tvmaze.R
 import com.api.tvmaze.databinding.FragmentShowDetailBinding
-import com.api.tvmaze.features.show.data.model.Show
+import com.api.tvmaze.features.show.domain.entity.ShowEntity
 import com.api.tvmaze.features.show.presentation.adapter.SeasonListAdapter
 import com.api.tvmaze.features.show.presentation.viewModel.ShowViewModel
 import com.api.tvmaze.utils.getParcelableArg
@@ -47,7 +47,7 @@ class ShowDetailFragment : Fragment() {
     }
 
     private fun setArgs() {
-        getParcelableArg<Show>("Show")?.let { model.setShow(it) }
+        getParcelableArg<ShowEntity>("Show")?.let { model.setShow(it) }
     }
 
     private fun setupFavorite() {
@@ -94,7 +94,7 @@ class ShowDetailFragment : Fragment() {
                 binding.apply {
                     txtGenre.text = show.genres.joinToString(separator = ", ")
                     imgShow.load(show.image?.medium)
-                    txtSchedule.text = show.schedule.scheduleDetail()
+                    txtSchedule.text = show.schedule.scheduleDetail
                     txtTitle.text = show.name
                     txtDescription.text = show.summary?.parseAsHtml()
                 }

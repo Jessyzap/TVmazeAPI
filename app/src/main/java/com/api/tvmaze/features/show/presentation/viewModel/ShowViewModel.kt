@@ -9,14 +9,12 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.api.tvmaze.core.network.ResponseWrapper
-import com.api.tvmaze.features.favorite_show.data.model.ShowObject
-import com.api.tvmaze.features.show.data.datasource.service.ShowAPI
-import com.api.tvmaze.features.show.data.model.Episode
-import com.api.tvmaze.features.show.data.model.Search
-import com.api.tvmaze.features.show.data.model.Season
-import com.api.tvmaze.features.show.data.model.Show
 import com.api.tvmaze.features.favorite_show.domain.IFavoriteShowRepository
+import com.api.tvmaze.features.show.data.datasource.service.ShowAPI
 import com.api.tvmaze.features.show.domain.IShowRepository
+import com.api.tvmaze.features.show.domain.entity.EpisodeEntity
+import com.api.tvmaze.features.show.domain.entity.SeasonEntity
+import com.api.tvmaze.features.show.domain.entity.ShowEntity
 import com.api.tvmaze.features.show.presentation.pagination.Pagination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -43,28 +41,28 @@ class ShowViewModel @Inject constructor(
     val searchCurrentSearchQuery
         get() = currentSearchQuery
 
-    private val _searchLiveDataList = MutableLiveData<List<Show>?>()
-    val searchLiveDataList: LiveData<List<Show>?>
+    private val _searchLiveDataList = MutableLiveData<List<ShowEntity>?>()
+    val searchLiveDataList: LiveData<List<ShowEntity>?>
         get() = _searchLiveDataList
 
-    private val _seasonLiveDataList = MutableLiveData<List<Season>>()
-    val seasonLiveDataList: LiveData<List<Season>>
+    private val _seasonLiveDataList = MutableLiveData<List<SeasonEntity>>()
+    val seasonLiveDataList: LiveData<List<SeasonEntity>>
         get() = _seasonLiveDataList
 
-    private val _episodeLiveDataList = MutableLiveData<List<Episode>>()
-    val episodeLiveDataList: LiveData<List<Episode>>
+    private val _episodeLiveDataList = MutableLiveData<List<EpisodeEntity>>()
+    val episodeLiveDataList: LiveData<List<EpisodeEntity>>
         get() = _episodeLiveDataList
 
-    private val _showLiveData = MutableLiveData<Show>()
-    val showLiveData: LiveData<Show>
+    private val _showLiveData = MutableLiveData<ShowEntity>()
+    val showLiveData: LiveData<ShowEntity>
         get() = _showLiveData
 
-    private val _seasonLiveData = MutableLiveData<Season>()
-    val seasonLiveData: LiveData<Season>
+    private val _seasonLiveData = MutableLiveData<SeasonEntity>()
+    val seasonLiveData: LiveData<SeasonEntity>
         get() = _seasonLiveData
 
-    private val _episodeLiveData = MutableLiveData<Episode>()
-    val episodeLiveData: LiveData<Episode>
+    private val _episodeLiveData = MutableLiveData<EpisodeEntity>()
+    val episodeLiveData: LiveData<EpisodeEntity>
         get() = _episodeLiveData
 
     fun onSearchQueryChanged(query: String) {
@@ -81,21 +79,21 @@ class ShowViewModel @Inject constructor(
         }
     }
 
-    fun setShow(show: Show) {
+    fun setShow(show: ShowEntity) {
         _showLiveData.value = show
     }
 
-    fun setSeason(season: Season) {
+    fun setSeason(season: SeasonEntity) {
         _seasonLiveData.value = season
     }
 
-    fun setEpisode(episode: Episode) {
+    fun setEpisode(episode: EpisodeEntity) {
         _episodeLiveData.value = episode
     }
 
-    private val _pagingData: MutableStateFlow<PagingData<Show>> =
+    private val _pagingData: MutableStateFlow<PagingData<ShowEntity>> =
         MutableStateFlow(PagingData.empty())
-    val pagingData: Flow<PagingData<Show>> = _pagingData
+    val pagingData: Flow<PagingData<ShowEntity>> = _pagingData
 
 
     fun getShows() {
@@ -125,7 +123,7 @@ class ShowViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 when (val response = repository.getSeasons(id)) {
-                    is ResponseWrapper.SuccessResult<List<Season>> -> {
+                    is ResponseWrapper.SuccessResult<List<SeasonEntity>> -> {
                         _seasonLiveDataList.postValue(response.result)
                     }
 
@@ -143,7 +141,7 @@ class ShowViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 when (val response = repository.getEpisodes(seasonId)) {
-                    is ResponseWrapper.SuccessResult<List<Episode>> -> {
+                    is ResponseWrapper.SuccessResult<List<EpisodeEntity>> -> {
                         _episodeLiveDataList.postValue(response.result)
                     }
 
@@ -161,8 +159,8 @@ class ShowViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 when (val response = repository.getSearch(path)) {
-                    is ResponseWrapper.SuccessResult<List<Search>> -> {
-                        _searchLiveDataList.postValue(Search.mapper(response.result))
+                    is ResponseWrapper.SuccessResult<List<ShowEntity>> -> {
+                        _searchLiveDataList.postValue(response.result)
                     }
 
                     is ResponseWrapper.ErrorResult -> {
@@ -175,11 +173,11 @@ class ShowViewModel @Inject constructor(
         }
     }
 
-    fun saveFavoriteShow(show: Show) =
-        favoriteRepository.saveFavoriteShow(ShowObject.mapperShowObject(show))
+    fun saveFavoriteShow(show: ShowEntity) =
+        favoriteRepository.saveFavoriteShow(show)
 
-    fun deleteFavoriteShow(show: Show) =
-        favoriteRepository.deleteFavoriteShow(ShowObject.mapperShowObject(show))
+    fun deleteFavoriteShow(show: ShowEntity) =
+        favoriteRepository.deleteFavoriteShow(show)
 
     fun checkIfIsFavorite(showId: Int?) = favoriteRepository.checkIfIsFavorite(showId)
 

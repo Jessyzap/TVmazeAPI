@@ -1,34 +1,33 @@
 package com.api.tvmaze.features.favorite_show.presentation.adapter
 
 import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import coil.load
-
 import com.api.tvmaze.databinding.ItemFavoriteShowListBinding
-import com.api.tvmaze.features.favorite_show.data.model.ShowObject
+import com.api.tvmaze.features.show.domain.entity.ShowEntity
 import com.api.tvmaze.utils.ShowDiffUtilCallback
 
 class FavoriteShowAdapter(
     private val context: Context,
-    private val callback: (ShowObject) -> Unit,
-    private val menuCallback: (ShowObject, View) -> Unit
+    private val callback: (ShowEntity) -> Unit,
+    private val menuCallback: (ShowEntity, View) -> Unit
 ) : RecyclerView.Adapter<FavoriteShowAdapter.FavoriteShowListViewHolder>() {
 
-    private var favoriteShowList: List<ShowObject> = emptyList()
+    private var favoriteShowList: List<ShowEntity> = emptyList()
 
     inner class FavoriteShowListViewHolder(val binding: ItemFavoriteShowListBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(show: ShowObject) {
+        fun bind(show: ShowEntity) {
 
             binding.apply {
                 txtGenre.text = show.genres.joinToString(separator = ", ")
                 imgShow.load(show.image?.medium)
-                txtSchedule.text = show.schedule?.scheduleDetail()
+                txtSchedule.text = show.schedule.scheduleDetail
                 txtTitle.text = show.name
             }
 
@@ -63,7 +62,7 @@ class FavoriteShowAdapter(
         holder.bind(favoriteShowList[position])
     }
 
-    fun updateList(newList: List<ShowObject>) {
+    fun updateList(newList: List<ShowEntity>) {
         val diffResult = DiffUtil.calculateDiff(ShowDiffUtilCallback(favoriteShowList, newList))
         favoriteShowList = newList
         diffResult.dispatchUpdatesTo(this)

@@ -13,9 +13,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.api.tvmaze.R
 import com.api.tvmaze.databinding.FragmentFavoriteShowBinding
-import com.api.tvmaze.features.favorite_show.data.model.ShowObject
 import com.api.tvmaze.features.favorite_show.presentation.adapter.FavoriteShowAdapter
 import com.api.tvmaze.features.favorite_show.presentation.viewModel.FavoriteShowViewModel
+import com.api.tvmaze.features.show.domain.entity.ShowEntity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -58,7 +58,7 @@ class FavoriteShowFragment : Fragment() {
         binding.rvFavorites.adapter = adapter
     }
 
-    private fun popupMenu(show: ShowObject, imgView: View) {
+    private fun popupMenu(show: ShowEntity, imgView: View) {
 
         val popupMenu = PopupMenu(requireContext(), imgView)
         popupMenu.menuInflater.inflate(R.menu.favorite_menu, popupMenu.menu)
@@ -76,7 +76,7 @@ class FavoriteShowFragment : Fragment() {
         popupMenu.show()
     }
 
-    private fun showDeleteConfirmationDialog(show: ShowObject) {
+    private fun showDeleteConfirmationDialog(show: ShowEntity) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         alertDialogBuilder.apply {
 
@@ -100,9 +100,8 @@ class FavoriteShowFragment : Fragment() {
         alertDialog.show()
     }
 
-    private fun navigateToShowDetail(show: ShowObject) {
-        val showModel = ShowObject.mapperShow(show)
-        val bundle = Bundle().apply { putParcelable("Show", showModel) }
+    private fun navigateToShowDetail(show: ShowEntity) {
+        val bundle = Bundle().apply { putParcelable("Show", show) }
         findNavController().navigate(R.id.action_favoriteShowFragment_to_showDetailFragment, bundle)
     }
 

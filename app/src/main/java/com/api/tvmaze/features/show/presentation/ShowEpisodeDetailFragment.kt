@@ -43,8 +43,8 @@ class ShowEpisodeDetailFragment : Fragment() {
                 binding.apply {
                     txtEpisodeTitle.text = episode.name
                     episode.image?.original?.let { imgEpisode.load(it) }
-                    txtSeasonEpisode.text = episode.seasonComplete()
-                    txtEpisode.text = episode.episodeComplete()
+                    txtSeasonEpisode.text = episode.seasonComplete
+                    txtEpisode.text = episode.episodeComplete
                     txtEpisodeDescription.text = episode.summary?.parseAsHtml()
                 }
             }

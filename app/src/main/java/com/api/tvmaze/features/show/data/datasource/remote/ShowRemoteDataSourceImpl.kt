@@ -7,9 +7,9 @@ import com.api.tvmaze.features.show.data.datasource.service.SearchAPI
 import com.api.tvmaze.features.show.data.datasource.service.SeasonAPI
 import com.api.tvmaze.features.show.data.datasource.service.ShowAPI
 import com.api.tvmaze.features.show.data.model.Episode
-import com.api.tvmaze.features.show.data.model.Search
 import com.api.tvmaze.features.show.data.model.Season
 import com.api.tvmaze.features.show.data.model.Show
+import com.api.tvmaze.features.show.data.model.Search
 
 class ShowRemoteDataSourceImpl(
     val showAPI: ShowAPI,

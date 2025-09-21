@@ -1,6 +1,7 @@
 package com.api.tvmaze.features.show.data.model
 
 import android.os.Parcelable
+import com.api.tvmaze.features.show.domain.entity.EpisodeEntity
 import com.api.tvmaze.utils.DiffIdentifiable
 import kotlinx.parcelize.Parcelize
 
@@ -12,19 +13,18 @@ data class Episode(
     val season: Int,
     val number: Int? = 0,
     val summary: String?
-) : Parcelable, DiffIdentifiable {
-    override val diffId: Int
-        get() = id
+) : Parcelable {
 
-    fun seasonComplete(): String {
-        return "Season: $season"
+    fun toEntity(): EpisodeEntity {
+        return EpisodeEntity(
+            id = id,
+            name = name,
+            seasonEpisode = "S: $season  E: $number  |  $name",
+            image = image?.toEntity(),
+            seasonComplete = "Season: $season",
+            episodeComplete = "Episode: $number",
+            summary = summary
+        )
     }
 
-    fun episodeComplete(): String {
-        return "Episode: $number"
-    }
-
-    fun seasonEpisode(): String {
-        return "S: $season  E: $number  |  $name"
-    }
 }

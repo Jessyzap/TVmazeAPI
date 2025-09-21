@@ -1,27 +1,27 @@
 package com.api.tvmaze.features.show.data.model
 
 import android.os.Parcelable
+import com.api.tvmaze.features.show.domain.entity.ImageTypeEntity
+import com.api.tvmaze.features.show.domain.entity.ShowEntity
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Search(
     val show: Show
 ) : Parcelable {
-    companion object {
-        fun mapper(response: List<Search>?): List<Show>? {
-            return response?.map {
-                Show(
-                    id = it.show.id,
-                    genres = it.show.genres,
-                    schedule = ScheduleType(
-                        time = it.show.schedule.time,
-                        days = it.show.schedule.days
-                    ),
-                    image = it.show.image,
-                    name = it.show.name,
-                    summary = it.show.summary
-                )
-            }
-        }
+
+    fun toShowEntity(): ShowEntity {
+        return ShowEntity(
+                id = show.id,
+                genres = show.genres,
+                schedule = show.schedule.toShowEntity(),
+                image = ImageTypeEntity(
+                    medium = show.image?.medium,
+                    original = show.image?.original
+                ),
+                name = show.name,
+                summary = show.summary
+            )
     }
+
 }

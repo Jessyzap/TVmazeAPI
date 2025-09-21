@@ -1,8 +1,7 @@
 package com.api.tvmaze.features.favorite_show.data.model
 
-import com.api.tvmaze.features.show.data.model.ImageType
-import com.api.tvmaze.features.show.data.model.ScheduleType
-import com.api.tvmaze.features.show.data.model.Show
+import com.api.tvmaze.features.show.domain.entity.ImageTypeEntity
+import com.api.tvmaze.features.show.domain.entity.ShowEntity
 import com.api.tvmaze.utils.DiffIdentifiable
 import io.realm.RealmList
 import io.realm.RealmObject
@@ -22,41 +21,39 @@ open class ShowObject(
         get() = id
 
     companion object {
-        fun mapperShow(showModel: ShowObject): Show {
-            return Show(
-                id = showModel.id,
-                genres = showModel.genres,
-                schedule = ScheduleType(
-                    time = showModel.schedule?.time.orEmpty(),
-                    days = showModel.schedule?.days.orEmpty()
+        fun mapperShow(showObject: ShowObject): ShowEntity {
+            return ShowEntity(
+                id = showObject.id,
+                genres = showObject.genres,
+                schedule = ShowEntity.ScheduleTypeEntity(
+                    scheduleDetail = showObject.schedule?.scheduleDetail.orEmpty(),
+                    time = showObject.schedule?.time.orEmpty(),
+                    days = showObject.schedule?.days.orEmpty()
                 ),
-                image = ImageType(
-                    medium = showModel.image?.medium,
-                    original = showModel.image?.original
+                image = ImageTypeEntity(
+                    medium = showObject.image?.medium,
+                    original = showObject.image?.original
                 ),
-                name = showModel.name,
-                summary = showModel.summary
+                name = showObject.name,
+                summary = showObject.summary
             )
         }
 
-        fun mapperShowObject(showModel: Show): ShowObject {
+        fun mapperShowObject(showEntity: ShowEntity): ShowObject {
             return ShowObject(
-                id = showModel.id,
+                id = showEntity.id,
                 genres = RealmList<String>().apply {
-                    addAll(showModel.genres)
+                    addAll(showEntity.genres)
                 },
                 schedule = ScheduleTypeObject(
-                    time = showModel.schedule.time,
-                    days = RealmList<String>().apply {
-                        addAll(showModel.schedule.days)
-                    }
+                    scheduleDetail = showEntity.schedule.scheduleDetail
                 ),
                 image = ImageTypeObject(
-                    medium = showModel.image?.medium,
-                    original = showModel.image?.original
+                    medium = showEntity.image?.medium,
+                    original = showEntity.image?.original
                 ),
-                name = showModel.name,
-                summary = showModel.summary
+                name = showEntity.name,
+                summary = showEntity.summary
             )
         }
     }
@@ -64,13 +61,10 @@ open class ShowObject(
 }
 
 open class ScheduleTypeObject(
-    var time: String = "",
+    var scheduleDetail: String = "",
+    var time: String? = null,
     var days: RealmList<String> = RealmList()
-) : RealmObject() {
-    fun scheduleDetail(): String {
-        return "Day: ${days.joinToString(separator = ", ")} \nTime: $time"
-    }
-}
+) : RealmObject()
 
 open class ImageTypeObject(
     var medium: String? = null,

@@ -5,16 +5,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.api.tvmaze.features.show.data.model.Season
 import com.api.tvmaze.databinding.ItemSeasonListBinding
+import com.api.tvmaze.features.show.domain.entity.SeasonEntity
 import com.api.tvmaze.utils.ShowDiffUtilCallback
 
 class SeasonListAdapter(
     private val context: Context,
-    private val callback: (Season) -> Unit
+    private val callback: (SeasonEntity) -> Unit
 ) : RecyclerView.Adapter<SeasonListAdapter.SeasonListViewHolder>() {
 
-    private var seasonList: List<Season> = emptyList()
+    private var seasonList: List<SeasonEntity> = emptyList()
 
     inner class SeasonListViewHolder(binding: ItemSeasonListBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -35,7 +35,7 @@ class SeasonListAdapter(
     override fun getItemCount(): Int = seasonList.size
 
     override fun onBindViewHolder(holder: SeasonListViewHolder, position: Int) {
-        holder.title.text = seasonList[position].seasonDetail()
+        holder.title.text = seasonList[position].seasonDetail
 
         holder.itemView.setOnClickListener {
             callback.invoke(seasonList[position])
@@ -43,7 +43,7 @@ class SeasonListAdapter(
 
     }
 
-    fun updateList(newList: List<Season>) {
+    fun updateList(newList: List<SeasonEntity>) {
         val diffResult = DiffUtil.calculateDiff(ShowDiffUtilCallback(seasonList, newList))
         seasonList = newList
         diffResult.dispatchUpdatesTo(this)

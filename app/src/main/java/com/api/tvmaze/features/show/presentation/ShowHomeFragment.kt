@@ -16,7 +16,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import com.api.tvmaze.R
 import com.api.tvmaze.databinding.FragmentHomeBinding
-import com.api.tvmaze.features.show.data.model.Show
+import com.api.tvmaze.features.show.domain.entity.ShowEntity
 import com.api.tvmaze.features.show.presentation.adapter.HomeListAdapter
 import com.api.tvmaze.features.show.presentation.viewModel.ShowViewModel
 import com.api.tvmaze.utils.hideKeyboard
@@ -82,7 +82,7 @@ class ShowHomeFragment : Fragment() {
         binding.rvHome.adapter = adapter
     }
 
-    private fun setPlaceholder(list: List<Show>) {
+    private fun setPlaceholder(list: List<ShowEntity>) {
         if (list.isEmpty()) {
             binding.placeholder.visibility = View.VISIBLE
         } else {
@@ -134,7 +134,7 @@ class ShowHomeFragment : Fragment() {
         loadStateListener?.let { adapter?.addLoadStateListener(it) }
     }
 
-    private fun navigateToShowDetail(show: Show) {
+    private fun navigateToShowDetail(show: ShowEntity) {
         findNavController().navigate(R.id.action_homeFragment_to_showDetailFragment)
         model.setShow(show)
     }

@@ -11,5 +11,5 @@ interface SearchAPI {
 
     suspend fun getShowSearchAPI(
         @Query("q") search: String
-    ): Response <List<Search>>
+    ): Response<List<Search>>
 }

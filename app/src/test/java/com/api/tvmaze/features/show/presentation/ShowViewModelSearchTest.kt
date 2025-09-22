@@ -26,7 +26,7 @@ class ShowViewModelSearchTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val viewModel = spyk(
-        ShowViewModel(mockk(), mockk()),
+        ShowViewModel(mockk(), mockk(), mockk()),
         recordPrivateCalls = true
     ) // for observe private functions
 

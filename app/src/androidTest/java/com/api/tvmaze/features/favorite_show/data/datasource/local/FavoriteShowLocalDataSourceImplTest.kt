@@ -1,35 +1,31 @@
-package com.api.tvmaze.features.favorite_show.data.datasource.local
-
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.api.tvmaze.features.favorite_show.data.datasource.local.FavoriteShowLocalDataSourceImpl
 import com.api.tvmaze.features.favorite_show.data.model.ShowObject
-import com.api.tvmaze.getOrAwaitValue
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.concurrent.TimeUnit
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 class FavoriteShowLocalDataSourceImplTest {
-
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var dataSource: FavoriteShowLocalDataSourceImpl
     private lateinit var testShow: ShowObject
 
     @Before
-    fun setUp() {
+    fun setUp() = runTest {
         Realm.init(InstrumentationRegistry.getInstrumentation().targetContext)
         val config = RealmConfiguration.Builder()
             .inMemory()
+            .name("test-realm")
             .build()
         Realm.setDefaultConfiguration(config)
 
@@ -40,50 +36,50 @@ class FavoriteShowLocalDataSourceImplTest {
             name = "Test"
         }
 
-        dataSource.deleteFavoriteShow(testShow).getOrAwaitValue() // clear any previous data
+        dataSource.deleteFavoriteShow(testShow)
     }
 
     @After
-    fun tearDown() {
+    fun tearDown() = runTest {
         dataSource.closeRealm()
     }
 
     @Test
-    fun saveFavoriteShow_savesSuccessfully() {
+    fun saveFavoriteShow_savesSuccessfully() = runTest {
         dataSource.saveFavoriteShow(testShow)
 
-        val favorites = dataSource.getFavoriteShows().getOrAwaitValue()
+        val favorites = dataSource.getFavoriteShows()
         assertTrue(favorites.any { it.id == testShow.id && it.name == testShow.name })
     }
 
     @Test
-    fun deleteFavoriteShow_removesSuccessfully() {
+    fun deleteFavoriteShow_removesSuccessfully() = runTest {
         dataSource.saveFavoriteShow(testShow)
 
-        val deleted = dataSource.deleteFavoriteShow(testShow).getOrAwaitValue()
+        val deleted = dataSource.deleteFavoriteShow(testShow)
         assertTrue(deleted)
 
-        val favorites = dataSource.getFavoriteShows().getOrAwaitValue()
+        val favorites = dataSource.getFavoriteShows()
         assertFalse(favorites.any { it.id == testShow.id })
     }
 
     @Test
-    fun checkIfIsFavorite_returnsTrueWhenExists() {
+    fun checkIfIsFavorite_returnsTrueWhenExists() = runTest {
         dataSource.saveFavoriteShow(testShow)
-        val isFavorite = dataSource.checkIfIsFavorite(testShow.id).getOrAwaitValue()
+
+        val isFavorite = dataSource.checkIfIsFavorite(testShow.id)
         assertTrue(isFavorite)
     }
 
     @Test
-    fun checkIfIsFavorite_returnsFalseWhenNotExists() {
-        val isFavorite = dataSource.checkIfIsFavorite(2).getOrAwaitValue()
+    fun checkIfIsFavorite_returnsFalseWhenNotExists() = runTest {
+        val isFavorite = dataSource.checkIfIsFavorite(2)
         assertFalse(isFavorite)
     }
 
     @Test
-    fun getFavoriteShows_returnsEmptyInitially() {
-        val favorites = dataSource.getFavoriteShows().getOrAwaitValue(time = 3, timeUnit = TimeUnit.SECONDS)
+    fun getFavoriteShows_returnsEmptyInitially() = runTest {
+        val favorites = dataSource.getFavoriteShows()
         assertTrue(favorites.isEmpty())
     }
-
 }

@@ -52,7 +52,8 @@ class ShowDetailFragment : Fragment() {
 
     private fun setupFavorite() {
         val show = model.showLiveData.value
-        model.checkIfIsFavorite(show?.id).observe(viewLifecycleOwner) { isFavorite ->
+        model.checkIfIsFavorite(show?.id)
+        model.isFavorite.observe(viewLifecycleOwner) { isFavorite ->
             show?.isFavorite = isFavorite
             updateFavoriteUI(isFavorite)
         }

@@ -46,7 +46,8 @@ class FavoriteShowFragment : Fragment() {
     }
 
     private fun fetchFavorites() {
-        model.getFavoriteShow().observe(viewLifecycleOwner) { favoritesShows ->
+        model.getFavoriteShow()
+        model.favoriteShows.observe(viewLifecycleOwner) { favoritesShows ->
             adapter.updateList(favoritesShows)
         }
     }
@@ -82,13 +83,7 @@ class FavoriteShowFragment : Fragment() {
 
             setTitle(R.string.remove_from_favorites)
             setPositiveButton(R.string.yes) { dialogInterface: DialogInterface, _: Int ->
-
-                model.deleteFavoriteShow(show).observe(viewLifecycleOwner) { success ->
-                    if (success) {
-                        fetchFavorites()
-                    }
-                }
-
+                model.deleteFavoriteShow(show)
                 dialogInterface.dismiss()
             }
             setNegativeButton(R.string.cancel) { dialogInterface: DialogInterface, _: Int ->

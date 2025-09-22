@@ -5,13 +5,13 @@ import com.api.tvmaze.features.favorite_show.data.model.ShowObject
 
 interface IFavoriteShowLocalDataSource {
 
-    fun getFavoriteShows(): LiveData<List<ShowObject>>
+    suspend fun getFavoriteShows(): List<ShowObject>
 
-    fun saveFavoriteShow(show: ShowObject)
+    suspend fun saveFavoriteShow(show: ShowObject)
 
-    fun deleteFavoriteShow(show: ShowObject): LiveData<Boolean>
+    suspend fun deleteFavoriteShow(show: ShowObject): Boolean
 
-    fun checkIfIsFavorite(showId: Int?): LiveData<Boolean>
+    suspend fun checkIfIsFavorite(showId: Int?): Boolean
 
     fun closeRealm()
 

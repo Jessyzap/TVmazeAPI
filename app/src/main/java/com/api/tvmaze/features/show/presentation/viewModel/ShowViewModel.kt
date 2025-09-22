@@ -65,6 +65,10 @@ class ShowViewModel @Inject constructor(
     val episodeLiveData: LiveData<EpisodeEntity>
         get() = _episodeLiveData
 
+    private val _isFavorite = MutableLiveData<Boolean>()
+    val isFavorite: LiveData<Boolean>
+        get() = _isFavorite
+
     fun onSearchQueryChanged(query: String) {
         searchJob?.cancel()
 
@@ -173,13 +177,21 @@ class ShowViewModel @Inject constructor(
         }
     }
 
-    fun saveFavoriteShow(show: ShowEntity) =
-        favoriteRepository.saveFavoriteShow(show)
+    fun saveFavoriteShow(show: ShowEntity) {
+        viewModelScope.launch {
+            favoriteRepository.saveFavoriteShow(show)
+        }
+    }
 
-    fun deleteFavoriteShow(show: ShowEntity) =
-        favoriteRepository.deleteFavoriteShow(show)
+    fun deleteFavoriteShow(show: ShowEntity) {
+        viewModelScope.launch {
+            favoriteRepository.deleteFavoriteShow(show)
+        }
+    }
 
-    fun checkIfIsFavorite(showId: Int?) = favoriteRepository.checkIfIsFavorite(showId)
+    fun checkIfIsFavorite(showId: Int?) = viewModelScope.launch {
+        _isFavorite.value = favoriteRepository.checkIfIsFavorite(showId)
+    }
 
     fun clearSearch() {
         _searchLiveDataList.value = null

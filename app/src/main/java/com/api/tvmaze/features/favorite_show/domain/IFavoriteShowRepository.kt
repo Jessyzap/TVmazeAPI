@@ -5,13 +5,13 @@ import com.api.tvmaze.features.show.domain.entity.ShowEntity
 
 interface IFavoriteShowRepository {
 
-    fun getFavoriteShows(): LiveData<List<ShowEntity>>
+    suspend fun getFavoriteShows():List<ShowEntity>
 
-    fun saveFavoriteShow(show: ShowEntity)
+    suspend fun saveFavoriteShow(show: ShowEntity)
 
-    fun deleteFavoriteShow(show: ShowEntity): LiveData<Boolean>
+    suspend fun deleteFavoriteShow(show: ShowEntity): Boolean
 
-    fun checkIfIsFavorite(showId: Int?): LiveData<Boolean>
+    suspend fun checkIfIsFavorite(showId: Int?): Boolean
 
     fun closeRealm()
 }
